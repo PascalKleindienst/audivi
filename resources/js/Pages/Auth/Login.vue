@@ -1,90 +1,98 @@
-<script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
+<script setup lang="ts">
+import { Link, useForm } from '@inertiajs/vue3';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import Checkbox from '@/Components/Checkbox.vue';
+import { Button } from '@/Components/ui/button';
+import { Checkbox } from '@/Components/ui/checkbox';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import { trans } from 'laravel-vue-i18n';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
 
-defineProps({
-    canResetPassword: Boolean,
-    status: String,
-});
+defineProps<{
+    canResetPassword: boolean;
+    status?: string;
+}>();
 
 const form = useForm({
     email: '',
     password: '',
-    remember: false,
+    remember: false
 });
 
 const submit = () => {
-    form.transform(data => ({
+    form.transform((data) => ({
         ...data,
-        remember: form.remember ? 'on' : '',
+        remember: form.remember ? 'on' : ''
     })).post(route('login'), {
-        onFinish: () => form.reset('password'),
+        onFinish: () => form.reset('password')
     });
 };
 </script>
 
 <template>
-    <Head title="Log in" />
-
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-            {{ status }}
+    <AuthLayout :title="trans('auth.login')">
+        <div class="grid gap-2 text-center">
+            <AuthenticationCardLogo class="mx-auto" />
+            <h1 class="text-3xl font-bold">{{ trans('auth.login') }}</h1>
+            <p class="text-balance text-muted-foreground">
+                {{ trans('auth.login_subtitle') }}
+            </p>
         </div>
 
         <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+            <div class="grid gap-4">
+                <!-- TODO: Component?-->
+                <div v-if="status" class="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
+                    {{ status }}
+                </div>
+                <div class="grid gap-2">
+                    <Label for="email">{{ trans('auth.email') }}</Label>
+                    <Input
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        placeholder="m@example.com"
+                        required
+                        autofocus
+                        autocomplete="username"
+                    />
+                    <InputError :message="form.errors.email" />
+                </div>
+                <div class="grid gap-2">
+                    <div class="flex items-center">
+                        <Label for="password">{{ trans('auth.password') }}</Label>
+                        <Link
+                            v-if="canResetPassword"
+                            :href="route('password.request')"
+                            class="ml-auto inline-block text-sm underline"
+                        >
+                            {{ trans('auth.forgot_password') }}
+                        </Link>
+                    </div>
+                    <Input
+                        id="password"
+                        v-model="form.password"
+                        type="password"
+                        autocomplete="current-password"
+                        required
+                    />
+                    <InputError :message="form.errors.password" />
+                </div>
+                <div class="items-top flex gap-x-2">
+                    <Checkbox id="remember" v-model:checked="form.remember" />
+                    <Label for="remember"> {{ trans('auth.remember_me') }} </Label>
+                </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Remember me</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
+                <Button
+                    type="submit"
+                    class="w-full"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
+                    {{ trans('auth.login') }}
+                </Button>
             </div>
         </form>
-    </AuthenticationCard>
+    </AuthLayout>
 </template>

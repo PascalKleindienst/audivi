@@ -1,0 +1,12 @@
+{
+    "auth.login": "Login",
+    "auth.register": "Register",
+    "auth.logout": "Logout",
+    "auth.password": "Password",
+    "auth.email": "Email",
+    "auth.login_subtitle": "Enter your email below to login to your account",
+    "auth.forgot_password": "Forgot password?",
+    "auth.remember_me": "Remember me",
+    "auth.forgot_password_subtitle": "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.",
+    "auth.password_reset_link": "Email Password Reset Link"
+}
