@@ -1,4 +1,5 @@
 const animate = require('tailwindcss-animate');
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -80,6 +81,10 @@ module.exports = {
                     from: { height: 'var(--radix-collapsible-content-height)' },
                     to: { height: 0 }
                 }
+            },
+            fontFamily: {
+                sans: ['Lato', ...defaultTheme.fontFamily.sans],
+                serif: ['Platypi', ...defaultTheme.fontFamily.serif]
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
