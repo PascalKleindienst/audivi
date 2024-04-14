@@ -6,8 +6,8 @@ import { Checkbox } from '@/Components/ui/checkbox';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import InputError from '@/Components/InputError.vue';
-import { trans } from 'laravel-vue-i18n';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
+import { trans } from 'laravel-vue-i18n';
 
 defineProps<{
     canResetPassword: boolean;
