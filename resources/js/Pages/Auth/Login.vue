@@ -8,6 +8,7 @@ import { Label } from '@/Components/ui/label';
 import InputError from '@/Components/InputError.vue';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { trans } from 'laravel-vue-i18n';
+import { route } from 'ziggy-js';
 
 defineProps<{
     canResetPassword: boolean;

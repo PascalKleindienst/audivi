@@ -7,6 +7,7 @@ import { Button } from '@/Components/ui/button';
 import { Label } from '@/Components/ui/label';
 import { Input } from '@/Components/ui/input';
 import { trans } from 'laravel-vue-i18n';
+import { route } from 'ziggy-js';
 
 defineProps({
     status: String

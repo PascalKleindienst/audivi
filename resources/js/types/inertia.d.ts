@@ -5,6 +5,7 @@ export interface SharedProps extends PageProps {
         user: {
             name: string;
             email: string;
+            profile_photo_url: string;
         };
     };
     canResetPassword: boolean;
