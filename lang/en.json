@@ -8,5 +8,22 @@
     "auth.forgot_password": "Forgot password?",
     "auth.remember_me": "Remember me",
     "auth.forgot_password_subtitle": "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.",
-    "auth.password_reset_link": "Email Password Reset Link"
+    "auth.password_reset_link": "Email Password Reset Link",
+    "general.add": "Add",
+    "general.search": "Search",
+    "general.toggle_theme": "Toggle Theme",
+    "general.light_theme": "Light",
+    "general.dark_theme": "Dark",
+    "general.system_theme": "System",
+    "general.manage_account": "Manage Account",
+    "general.profile": "Profile",
+    "general.api_tokens": "API Tokens",
+    "navigation.dashboard": "Dashboard",
+    "navigation.books": "Books",
+    "navigation.categories": "Categories",
+    "navigation.series": "Series",
+    "navigation.authors": "Authors",
+    "navigation.publishers": "Publishers",
+    "navigation.bookshelf": "Bookshelf",
+    "navigation.settings": "Settings"
 }
