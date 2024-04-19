@@ -1,23 +1,10 @@
 <template>
     <svg
-        id="euF8xR3BPc51"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 200 75"
+        viewBox="0 0 75 75"
         shape-rendering="geometricPrecision"
         text-rendering="geometricPrecision"
     >
-        <text
-            dx="0"
-            dy="0"
-            font-family="Audiowide"
-            font-size="48"
-            font-weight="400"
-            transform="translate(71.230876 63.6348)"
-            stroke-width="0"
-            fill="var(--_logoColor, hsl(var(--foreground)))"
-        >
-            <tspan y="0" font-weight="400" stroke-width="0"><![CDATA[udivi]]></tspan>
-        </text>
         <polygon
             points="0,-30 25.980762,15 -25.980762,15 0,-30"
             transform="translate(38.165283 44.585663)"

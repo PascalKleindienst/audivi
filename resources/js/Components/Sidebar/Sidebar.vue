@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { route } from 'ziggy-js';
-import ApplicationMark from '@/Components/ApplicationMark.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Icon } from '@iconify/vue';
 import SidebarNavItem from '@/Components/Sidebar/SidebarNavItem.vue';
 import { trans } from 'laravel-vue-i18n';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 
 defineProps<{ showNavigation: boolean }>();
 const emit = defineEmits<{ (e: 'closeNavigation'): void }>();
@@ -26,7 +26,7 @@ const closeNavigation = () => {
     >
         <div class="px-4">
             <Link :href="route('dashboard')" class="flex items-center gap-2">
-                <ApplicationMark class="block h-8 w-auto" />
+                <ApplicationLogo class="block h-8 w-auto" />
             </Link>
         </div>
 
