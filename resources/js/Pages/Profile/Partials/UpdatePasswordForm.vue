@@ -1,20 +1,22 @@
-<script setup>
-import { ref } from 'vue';
+<script setup lang="ts">
+import { ref, watchEffect } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import ActionMessage from '@/Components/ActionMessage.vue';
+import { route } from 'ziggy-js';
+import { trans } from 'laravel-vue-i18n';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
+import { Button } from '@/Components/ui/button';
+import { toast } from '@/Components/ui/toast';
 
-const passwordInput = ref(null);
-const currentPasswordInput = ref(null);
+const passwordInput = ref<HTMLInputElement | null>(null);
+const currentPasswordInput = ref<HTMLInputElement | null>(null);
 
 const form = useForm({
     current_password: '',
     password: '',
-    password_confirmation: '',
+    password_confirmation: ''
 });
 
 const updatePassword = () => {
@@ -25,32 +27,37 @@ const updatePassword = () => {
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
-                passwordInput.value.focus();
+                passwordInput.value?.focus();
             }
 
             if (form.errors.current_password) {
                 form.reset('current_password');
-                currentPasswordInput.value.focus();
+                currentPasswordInput.value?.focus();
             }
-        },
+        }
     });
 };
+
+watchEffect(() => {
+    if (form.recentlySuccessful) {
+        toast({
+            variant: 'success',
+            description: trans('general.saved_success')
+        });
+    }
+});
 </script>
 
 <template>
     <FormSection @submitted="updatePassword">
-        <template #title>
-            Update Password
-        </template>
+        <template #title>{{ trans('profile.password.title') }}</template>
 
-        <template #description>
-            Ensure your account is using a long, random password to stay secure.
-        </template>
+        <template #description>{{ trans('profile.password.description') }}</template>
 
         <template #form>
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="current_password" value="Current Password" />
-                <TextInput
+                <Label for="current_password">{{ trans('profile.password.current') }}</Label>
+                <Input
                     id="current_password"
                     ref="currentPasswordInput"
                     v-model="form.current_password"
@@ -62,8 +69,8 @@ const updatePassword = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="password" value="New Password" />
-                <TextInput
+                <Label for="password">{{ trans('profile.password.new') }}</Label>
+                <Input
                     id="password"
                     ref="passwordInput"
                     v-model="form.password"
@@ -75,8 +82,8 @@ const updatePassword = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
+                <Label for="password_confirmation">{{ trans('profile.password.confirm') }}</Label>
+                <Input
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
@@ -88,13 +95,9 @@ const updatePassword = () => {
         </template>
 
         <template #actions>
-            <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                Saved.
-            </ActionMessage>
-
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Save
-            </PrimaryButton>
+            <Button type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                {{ trans('general.save') }}
+            </Button>
         </template>
     </FormSection>
 </template>
