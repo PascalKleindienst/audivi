@@ -3,16 +3,28 @@ import '../css/app.css';
 
 import { createApp, DefineComponent, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from 'ziggy-js';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { i18nVue } from 'laravel-vue-i18n';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Audivi';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) =>
-        resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
+    resolve: async (name) => {
+        const page = await resolvePageComponent(
+            `./Pages/${name}.vue`,
+            import.meta.glob<DefineComponent>('./Pages/**/*.vue')
+        );
+
+        if (page.default.layout === undefined) {
+            page.default.layout ??= AppLayout;
+        }
+
+        return page;
+    },
+    // ),
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     setup({ el, App, props, plugin }) {
