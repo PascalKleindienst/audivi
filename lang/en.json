@@ -15,6 +15,8 @@
     "auth.email.unverified": "Your email address is unverified.",
     "auth.email.resend_verification": "Click here to re-send the verification email.",
     "auth.email.verification_was_sent": "A new verification link has been sent to your email address.",
+    "auth.2fa.enter_code": "Please confirm access to your account by entering the authentication code provided by your authenticator application.",
+    "auth.2fa.enter_recovery_code": "Please confirm access to your account by entering one of your emergency recovery codes.",
     "general.add": "Add",
     "general.cancel": "Cancel",
     "general.confirm": "Confirm",
@@ -73,5 +75,8 @@
     "profile.2fa.regenerate_recovery_codes": "Regenerate Recovery Codes",
     "profile.2fa.show_recovery_codes": "Show Recovery Codes",
     "profile.2fa.setup_key": "Setup Key: :key",
-    "profile.2fa.code": "Code"
+    "profile.2fa.code": "Code",
+    "profile.2fa.recovery_code": "Recovery Code",
+    "profile.2fa.use_recovery_code": "Use a recovery code",
+    "profile.2fa.use_auth_code": "Use an authentication code"
 }

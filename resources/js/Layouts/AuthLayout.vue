@@ -1,14 +1,6 @@
-<script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-
-defineProps<{
-    title: string;
-}>();
-</script>
+<script setup lang="ts"></script>
 
 <template>
-    <Head :title="title" />
-
     <div class="min-h-screen w-full lg:grid lg:grid-cols-2">
         <div class="flex items-center justify-center py-12">
             <div class="mx-auto grid w-[65ch] gap-6 px-4">

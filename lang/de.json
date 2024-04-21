@@ -15,6 +15,8 @@
     "auth.email.unverified": "Deine E-Mail-Adresse ist nicht verifiziert.",
     "auth.email.resend_verification": "Klicke hier, um die Bestätigungs-E-Mail erneut zu senden.",
     "auth.email.verification_was_sent": "Es wurde ein neuer Verifizierungslink an deine E-Mail-Adresse gesendet.",
+    "auth.2fa.enter_code": "Bitte bestätige den Zugriff auf dein Konto, indem du den von deiner Authentifizierungsanwendung bereitgestellten Authentifizierungscode eingibst.",
+    "auth.2fa.enter_recovery_code": "Bitte bestätige den Zugriff auf dein Konto, indem du einen deiner Notfall-Wiederherstellungscodes eingibst.",
     "general.add": "Hinzufügen",
     "general.cancel": "Abbrechen",
     "general.confirm": "Bestätigen",
@@ -73,5 +75,8 @@
     "profile.2fa.regenerate_recovery_codes": "Wiederherstellungs-Codes regenerieren",
     "profile.2fa.show_recovery_codes": "Wiederherstellungscodes anzeigen",
     "profile.2fa.setup_key": "Setup Key: :key",
-    "profile.2fa.code": "Code"
+    "profile.2fa.code": "Code",
+    "profile.2fa.recovery_code": "Wiederherstellungscode",
+    "profile.2fa.use_recovery_code": "Wiederherstellungscode benutzen",
+    "profile.2fa.use_auth_code": "Authentifizierungscode benutzen"
 }
