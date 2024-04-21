@@ -27,7 +27,7 @@ const initials = computed(
     () =>
         pageProps.value.auth.user?.name
             ?.split(' ')
-            .map((n) => n[0])
+            .map((n: string) => n[0])
             .join('') ?? pageProps.value.auth.user?.name
 );
 </script>
