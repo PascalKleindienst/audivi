@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
 use App\Models\Author;
@@ -7,7 +9,7 @@ use DateTime;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
-class AuthorData extends Data
+final class AuthorData extends Data
 {
     public function __construct(
         public int $id,
@@ -23,13 +25,13 @@ class AuthorData extends Data
     public static function fromModel(Author $author): self
     {
         return new self(
-            $author->id,
-            $author->name,
-            Lazy::create(static fn () => $author->image),
-            Lazy::create(static fn () => $author->description),
-            Lazy::create(static fn () => $author->link),
-            Lazy::create(static fn () => $author->created_at),
-            Lazy::create(static fn () => $author->updated_at)
+            id: $author->id,
+            name: $author->name,
+            image: Lazy::create(static fn () => $author->image),
+            description: Lazy::create(static fn () => $author->description),
+            link: Lazy::create(static fn () => $author->link),
+            created_at: Lazy::create(static fn () => $author->created_at),
+            updated_at: Lazy::create(static fn () => $author->updated_at)
         );
     }
 }
