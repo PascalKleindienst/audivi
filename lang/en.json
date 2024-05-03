@@ -32,6 +32,8 @@
     "general.manage_account": "Manage Account",
     "general.profile": "Profile",
     "general.api_tokens": "API Tokens",
+    "general.upload.drop": "Drop your files here or",
+    "general.upload.browse": "browse",
     "navigation.dashboard": "Dashboard",
     "navigation.books": "Books",
     "navigation.categories": "Categories",
