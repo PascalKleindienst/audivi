@@ -18,7 +18,7 @@ import {
 
 const emit = defineEmits(['confirmed']);
 
-const props = defineProps({
+defineProps({
     title: {
         type: String,
         default: 'auth.confirm_password'
