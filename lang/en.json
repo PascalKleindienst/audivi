@@ -80,5 +80,13 @@
     "profile.2fa.code": "Code",
     "profile.2fa.recovery_code": "Recovery Code",
     "profile.2fa.use_recovery_code": "Use a recovery code",
-    "profile.2fa.use_auth_code": "Use an authentication code"
+    "profile.2fa.use_auth_code": "Use an authentication code",
+    "library.add_files": "Add Audiobooks",
+    "library.upload.title": "Add audiobooks to your library",
+    "library.upload.dropzone": "Zip, MP3, or Audio Files",
+    "library.upload.overwrite": "Overwrite existing audiobooks in case of duplicates",
+    "library.upload.items.left": ":num left",
+    "library.upload.items.successful": ":num successful",
+    "library.upload.items.failed": ":num failed",
+    "library.upload.all": "Upload all"
 }

@@ -14,8 +14,8 @@ export interface UploadState {
     /** Number of files waiting to be uploaded */
     waiting: number | ComputedRef<number>;
 
-    /** Number of files successfully uploaded */
-    successfull: number | ComputedRef<number>;
+    /** Number of files successfuly uploaded */
+    successful: number | ComputedRef<number>;
 
     /** Number of files failed during the upload */
     failed: number | ComputedRef<number>;
@@ -85,8 +85,8 @@ export function useFileUpload(
         files: [],
         uploading: computed<boolean>(() => state.files.filter((file: FileUpload) => file.uploading).length > 0),
         hasError: computed<boolean>(() => state.files.filter((file: FileUpload) => file.error).length > 0),
-        waiting: computed<number>(() => state.files.length - Number(state.successfull) - Number(state.failed)),
-        successfull: computed<number>(
+        waiting: computed<number>(() => state.files.length - Number(state.successful) - Number(state.failed)),
+        successful: computed<number>(
             () => state.files.filter((file: FileUpload) => !file.error && file.complete).length
         ),
         failed: computed<number>(() => state.files.filter((file: FileUpload) => file.error).length)

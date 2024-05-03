@@ -80,5 +80,13 @@
     "profile.2fa.code": "Code",
     "profile.2fa.recovery_code": "Wiederherstellungscode",
     "profile.2fa.use_recovery_code": "Wiederherstellungscode benutzen",
-    "profile.2fa.use_auth_code": "Authentifizierungscode benutzen"
+    "profile.2fa.use_auth_code": "Authentifizierungscode benutzen",
+    "library.add_files": "Hörbücher hinzufügen",
+    "library.upload.title": "Hörbücher zur Bibliothek hinzufügen",
+    "library.upload.dropzone": "Zip, MP3, oder Audio-Dateien",
+    "library.upload.overwrite": "Überschreiben vorhandener Hörbücher im Falle von Duplikaten",
+    "library.upload.items.left": ":count verbleibend",
+    "library.upload.items.successful": ":count erfolgreich",
+    "library.upload.items.failed": ":count fehlgeschlagen",
+    "library.upload.all": "Alle hochladen"
 }
