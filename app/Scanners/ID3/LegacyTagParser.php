@@ -29,13 +29,13 @@ final class LegacyTagParser
             'artist' => trim($this->getString($buffer, 30, 33)) ?: null,
             'album' => trim($this->getString($buffer, 30, 63)) ?: null,
             'year' => (int) trim($this->getString($buffer, 4, 93)) ?: null,
-            'comment' => $this->getString($buffer, 30, 97) ?: null,
+            'comments' => $this->getString($buffer, 30, 97) ?: null,
             'genre' => Genre::tryFrom($this->getUint($buffer, 127)),
         ];
 
         // If there is a zero byte at [125], the comment is 28 bytes and the remaining 2 are [0, track]
         if ($this->getUint($buffer, 125) === 0) {
-            $data['comment'] = $this->getString($buffer, 28, 97);
+            $data['comments'] = $this->getString($buffer, 28, 97);
             $data['version'] = 1.1;
             $data['track'] = (string) $this->getUint($buffer, 126);
         }

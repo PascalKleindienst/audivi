@@ -36,6 +36,7 @@ final class FrameParser
 
         // Get Frame Values for frame type
         $result = [];
+        $result['value'] = null;
         $result['id'] = $header['id'];
         $result['type'] = $matchedType;
 
@@ -45,6 +46,8 @@ final class FrameParser
             $result['value'] = $this->getString($buffer, null, 10);
         } elseif ($header['id'] === 'APIC') {
             $result['value'] = $this->parsePicture($buffer);
+        } elseif ($header['type'] === 'C') {
+            $result['value'] = $this->parseComment($buffer);
         }
 
         return FrameData::from($result);
@@ -67,6 +70,15 @@ final class FrameParser
         }
 
         return $val;
+    }
+
+    private function parseComment(string $buffer): ?string
+    {
+        return match ($this->getUint($buffer, 10)) {
+            0, 3 => $this->getString($buffer, null, 28), // already utf-8, just get all the bytes
+            1, 2 => mb_convert_encoding($this->getRaw($buffer, null, 28 + 2), 'UTF-8', 'UTF-16LE'), // get utf-16 and convert to utf-8
+            default => null
+        };
     }
 
     private function parsePicture(string $buffer): ImageValueData
