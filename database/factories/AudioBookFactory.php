@@ -24,6 +24,7 @@ class AudioBookFactory extends Factory
             'description' => $this->faker->text(),
             'rating' => $this->faker->randomFloat(null, 0, 5),
             'cover' => null,
+            'language' => 'en-GB',
             'published_at' => Carbon::now(),
         ];
     }

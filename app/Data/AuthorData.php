@@ -12,13 +12,13 @@ use Spatie\LaravelData\Lazy;
 final class AuthorData extends Data
 {
     public function __construct(
-        public int $id,
-        public string $name,
-        public Lazy|null|string $image,
-        public Lazy|null|string $description,
-        public Lazy|null|string $link,
-        public Lazy|null|DateTime $created_at,
-        public Lazy|null|DateTime $updated_at
+        public readonly ?int $id,
+        public readonly string $name,
+        public readonly Lazy|null|string $image,
+        public readonly Lazy|null|string $description,
+        public readonly Lazy|null|string $link,
+        public readonly Lazy|null|DateTime $created_at = null,
+        public readonly Lazy|null|DateTime $updated_at = null
     ) {
     }
 
@@ -32,6 +32,19 @@ final class AuthorData extends Data
             link: Lazy::create(static fn () => $author->link),
             created_at: Lazy::create(static fn () => $author->created_at),
             updated_at: Lazy::create(static fn () => $author->updated_at)
+        );
+    }
+
+    public static function fromString(string $name): self
+    {
+        return new self(
+            id: null,
+            name: $name,
+            image: null,
+            description: null,
+            link: null,
+            created_at: null,
+            updated_at: null
         );
     }
 }

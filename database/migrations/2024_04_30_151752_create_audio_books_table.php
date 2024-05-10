@@ -6,18 +6,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+return new class() extends Migration
+{
     public function up(): void
     {
         Schema::create('audio_books', static function (Blueprint $table) {
             $table->id();
-            $table->string('path');
+            $table->string('path')->unique();
             $table->string('title');
             $table->string('subtitle')->nullable();
             $table->float('volume')->nullable();
             $table->text('description')->nullable();
             $table->float('rating')->nullable();
             $table->string('cover')->nullable();
+            $table->string('language')->nullable();
             $table->dateTime('published_at')->nullable();
             $table->timestamps();
         });

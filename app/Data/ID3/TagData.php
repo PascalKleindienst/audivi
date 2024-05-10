@@ -16,11 +16,10 @@ final class TagData extends Data
         public readonly ?int $year = null,
         /** @var float|int[]|null */
         public readonly float|array|null $version = null,
-        public readonly ?string $comment = null,
+        public readonly ?string $comments = null,
         public readonly ?string $track = null,
         public readonly ?Genre $genre = null,
         public readonly ?string $publisher = null,
-        public readonly ?\DateTimeInterface $published = null,
         public readonly ?string $language = null,
         /** @var FrameData[] */
         public readonly array $frames = [],

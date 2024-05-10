@@ -7,7 +7,9 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property Carbon|null $published_at
@@ -40,6 +42,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereVolume($value)
  *
+ * @property string|null $language
+ * @property int|null $publisher_id
+ * @property int|null $series_id
+ * @property-read \App\Models\Publisher|null $publisher
+ * @property-read \App\Models\Series|null $series
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Track> $tracks
+ * @property-read int|null $tracks_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereLanguage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AudioBook wherePublisherId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereSeriesId($value)
+ *
  * @mixin \Eloquent
  */
 class AudioBook extends Model
@@ -54,12 +68,28 @@ class AudioBook extends Model
         'description',
         'rating',
         'cover',
+        'language',
         'published_at',
     ];
 
     public function authors(): BelongsToMany
     {
         return $this->belongsToMany(Author::class);
+    }
+
+    public function publisher(): BelongsTo
+    {
+        return $this->belongsTo(Publisher::class);
+    }
+
+    public function series(): BelongsTo
+    {
+        return $this->belongsTo(Series::class);
+    }
+
+    public function tracks(): HasMany
+    {
+        return $this->hasMany(Track::class);
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Data\Library\MetaData;
 use App\Models\AudioBook;
 use Carbon\Carbon;
 use DateTime;
@@ -13,22 +14,27 @@ use Spatie\LaravelData\Lazy;
 
 /**
  * @property Lazy|Collection<int, AuthorData> $authors
+ * @property Lazy|Collection<int, TrackData> $tracks
  */
 final class AudioBookData extends Data
 {
     public function __construct(
-        public int $id,
-        public string $title,
-        public string $path,
-        public ?string $subtitle,
-        public ?float $volume,
-        public Lazy|string|null $description,
-        public ?float $rating,
-        public ?string $cover,
-        public DateTime|Carbon|null $published_at,
-        public DateTime|Carbon|null $created_at,
-        public DateTime|Carbon|null $updated_at,
-        public Lazy|Collection $authors
+        public readonly ?int $id,
+        public readonly string $title,
+        public readonly string $path,
+        public readonly ?string $subtitle,
+        public readonly ?float $volume,
+        public readonly Lazy|string|null $description,
+        public readonly ?float $rating,
+        public readonly ?string $cover, // TODO: Absolute URL Transform?
+        public readonly ?string $language,
+        public readonly Lazy|Collection $authors,
+        public readonly Lazy|Collection $tracks,
+        public readonly Lazy|SeriesData|null $series = null,
+        public readonly Lazy|PublisherData|null $publisher = null,
+        public readonly DateTime|Carbon|null $published_at = null,
+        public readonly DateTime|Carbon|null $created_at = null,
+        public readonly DateTime|Carbon|null $updated_at = null,
     ) {
     }
 
@@ -53,10 +59,34 @@ final class AudioBookData extends Data
             description: Lazy::create(static fn () => $book->description),
             rating: $book->rating,
             cover: $book->cover,
+            language: $book->language,
+            authors: Lazy::create(static fn () => AuthorData::collect($book->authors)),
+            tracks: Lazy::create(static fn () => TrackData::collect($book->tracks)),
+            series: Lazy::create(static fn () => SeriesData::from($book->series)),
+            publisher: Lazy::create(static fn () => PublisherData::from($book->publisher)),
             published_at: $book->published_at,
             created_at: $book->created_at,
             updated_at: $book->updated_at,
-            authors: Lazy::create(static fn () => AuthorData::collect($book->authors))
+        );
+    }
+
+    public static function fromMetaData(MetaData $metadata): self
+    {
+        return new self(
+            id: null,
+            title: $metadata->title,
+            path: $metadata->path,
+            subtitle: $metadata->subtitle,
+            volume: $metadata->volume,
+            description: $metadata->description,
+            rating: null,
+            cover: $metadata->cover,
+            language: $metadata->language,
+            authors: AuthorData::collect($metadata->authors, Collection::class),
+            tracks: TrackData::collect($metadata->tracks, Collection::class),
+            series: SeriesData::from($metadata->series),
+            publisher: PublisherData::from($metadata->publisher),
+            published_at: $metadata->published_at,
         );
     }
 }
