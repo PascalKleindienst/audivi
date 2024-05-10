@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Scanners\ID3\ID3TagScanner;
+use App\Scanners\ID3\ParserService;
+use App\Scanners\Scanner;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(TelescopeServiceProvider::class);
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
         }
+
+        $this->app->bind('id3.parser', static fn (Application $app) => $app->make(ParserService::class));
     }
 
     /**
@@ -25,5 +31,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->app->resolving(Scanner::class, function (Scanner $scanner, Application $app) {
+            $scanner->addScanner($app->get(ID3TagScanner::class));
+        });
     }
 }
