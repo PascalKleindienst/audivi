@@ -29,7 +29,7 @@ it('parses a ID3v1 tag', function () {
         ->and($tagData->artist)->toBe('ARTIST')
         ->and($tagData->album)->toBe('ALBUM')
         ->and($tagData->year)->toBe(1999)
-        ->and($tagData->comment)->toBe('COMMENT')
+        ->and($tagData->comments)->toBe('COMMENT')
         ->and($tagData->genre)->toBe(Genre::CLASSIC_ROCK);
 
 })->group('scanners', 'id3');
@@ -50,7 +50,7 @@ it('parses additional ID3v1 data', function () {
         ->and($tagData->artist)->toBe('ARTIST')
         ->and($tagData->album)->toBe('ALBUM')
         ->and($tagData->year)->toBe(1999)
-        ->and($tagData->comment)->toBe('COMMENT')
+        ->and($tagData->comments)->toBe('COMMENT')
         ->and($tagData->genre)->toBe(Genre::CLASSIC_ROCK)
         ->and($tagData->version)->toBe(1.1)
         ->and($tagData->track)->toBe('2');
