@@ -6,9 +6,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-zip": "*",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/framework": "^11.0",
         "laravel/jetstream": "^5.0",
+        "laravel/prompts": "^0.1.21",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "spatie/laravel-data": "^4.5",
@@ -61,8 +63,10 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
+        "coverage": "XDEBUG_MODE=coverage @php artisan test --coverage",
+        "coverage:clover": "XDEBUG_MODE=coverage @php artisan test --coverage-clover coverage.xml",
         "phpstan": "vendor/bin/phpstan analyze -c phpstan.neon --memory-limit=256M",
-        "phpinsights": "vendor/bin/phpinsights analyse --config-path=config/insights.php app database --format=console"
+        "phpinsights": "vendor/bin/phpinsights analyse --config-path=\"config/insights.php\" app --format=console"
     },
     "extra": {
         "laravel": {
