@@ -135,7 +135,7 @@ class AudiviInstallCommand extends Command implements PromptsForMissingInput
                 ->text('Database Host', default: $this->option('db-host') ?? '', required: true, name: 'host')
                 ->text('Database Port', default: $this->option('db-port') ?? '', required: true, name: 'port')
                 ->text('Database Name', default: $this->option('db-name') ?? '', required: true, name: 'database')
-                ->text('Database User', default: $this->option('db-name') ?? '', required: true, name: 'user')
+                ->text('Database User', default: $this->option('db-username') ?? '', required: true, name: 'user')
                 ->password('Database Password', required: true, name: 'password')
                 ->confirm('Overwrite existing database?', name: 'confirmation')
                 ->submit();

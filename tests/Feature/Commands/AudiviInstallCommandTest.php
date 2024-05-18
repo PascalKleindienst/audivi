@@ -109,7 +109,7 @@ it('installs the application', function () {
 
     // Make sure the needed commands are executed
     Process::shouldReceive('run')->once()->with('php artisan key:generate --ansi', null);
-    Process::shouldReceive('run')->once()->with('php artisan migrate --graceful --ansi --force', null);
+    Process::shouldReceive('run')->once()->with('php artisan migrate:fresh --ansi --force', null);
     Process::shouldReceive('run')->once()->with('npm ci', null);
     Process::shouldReceive('run')->once()->with('npm run build', null);
 
@@ -131,7 +131,6 @@ it('installs the application', function () {
         ->expectsQuestion('Username', 'admin')
         ->expectsQuestion('E-Mail', 'admin@local.test')
         ->expectsQuestion('Password', 'test1234')
-        // TODO: Check fi admin was created
         ->expectsOutputToContain('Build Assets ...')
         ->expectsOutputToContain('Cleanup')
         ->expectsOutputToContain('Audivi was installed successfully')

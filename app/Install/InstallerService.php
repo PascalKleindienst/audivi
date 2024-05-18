@@ -92,7 +92,7 @@ final class InstallerService
         }
 
         $this->updateEnvironmentValue('DB_HOST', $host);
-        $this->updateEnvironmentValue('DB_POST', $port);
+        $this->updateEnvironmentValue('DB_PORT', $port);
         $this->updateEnvironmentValue('DB_DATABASE', $database);
         $this->updateEnvironmentValue('DB_USERNAME', $username);
         $this->updateEnvironmentValue('DB_PASSWORD', $password);
@@ -101,12 +101,26 @@ final class InstallerService
     public function saveEnvironment(): void
     {
         File::put('.env', $this->environment);
+
+        config([
+            'database.default' => $_ENV['DB_CONNECTION']
+        ]);
+
+        if ($_ENV['DB_CONNECTION'] !== 'sqlite') {
+            config([
+                    'database.connections.' .  $_ENV['DB_CONNECTION'] . '.host' => $_ENV['DB_HOST'],
+                    'database.connections.' .  $_ENV['DB_CONNECTION'] . '.port' => $_ENV['DB_PORT'],
+                    'database.connections.' .  $_ENV['DB_CONNECTION'] . '.database' => $_ENV['DB_DATABASE'],
+                    'database.connections.' .  $_ENV['DB_CONNECTION'] . '.username' => $_ENV['DB_USERNAME'],
+                    'database.connections.' .  $_ENV['DB_CONNECTION'] . '.password' => $_ENV['DB_PASSWORD'],
+            ]);
+        }
         config(['telescope.storage.database.connection' => $_ENV['DB_CONNECTION']]); // fix telescope issue
     }
 
     public function createDatabase(): void
     {
-        $this->process('php artisan migrate --graceful --ansi --force');
+        $this->process('php artisan migrate:fresh --ansi --force');
     }
 
     public function createAdmin(string $name, string $email, #[SensitiveParameter] string $password): User
