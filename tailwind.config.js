@@ -87,8 +87,7 @@ module.exports = {
                 }
             },
             fontFamily: {
-                sans: ['Lato', ...defaultTheme.fontFamily.sans],
-                serif: ['Platypi', ...defaultTheme.fontFamily.serif]
+                serif: ['Garamond', ...defaultTheme.fontFamily.serif]
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
