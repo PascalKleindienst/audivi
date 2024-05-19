@@ -9,6 +9,7 @@ use App\Models\AudioBook;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
@@ -58,12 +59,12 @@ final class AudioBookData extends Data
             volume: $book->volume,
             description: Lazy::create(static fn () => $book->description),
             rating: $book->rating,
-            cover: $book->cover,
+            cover: $book->cover ? Storage::disk('public')->url($book->cover) : null,
             language: $book->language,
             authors: Lazy::create(static fn () => AuthorData::collect($book->authors)),
             tracks: Lazy::create(static fn () => TrackData::collect($book->tracks)),
-            series: Lazy::create(static fn () => SeriesData::from($book->series)),
-            publisher: Lazy::create(static fn () => PublisherData::from($book->publisher)),
+            series: Lazy::create(static fn () => $book->series ? SeriesData::from($book->series) : null),
+            publisher: Lazy::create(static fn () => $book->publisher ? PublisherData::from($book->publisher) : null),
             published_at: $book->published_at,
             created_at: $book->created_at,
             updated_at: $book->updated_at,
