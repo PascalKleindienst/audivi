@@ -60,7 +60,7 @@ final class FrameParser
     {
         $encoding = $this->getUint($buffer, 10);
         $val = match ($encoding) {
-            0, 3 => $this->getString($buffer, null, 11), // already utf-8, just get all the bytes
+            0, 3 => mb_convert_encoding($this->getString($buffer, null, 11), 'UTF-8', 'ISO-8859-1'),
             1, 2 => mb_convert_encoding($this->getRaw($buffer, null, 11 + 2), 'UTF-8', 'UTF-16LE'), // get utf-16 and convert to utf-8
             default => null
         };
@@ -75,7 +75,7 @@ final class FrameParser
     private function parseComment(string $buffer): ?string
     {
         return match ($this->getUint($buffer, 10)) {
-            0, 3 => $this->getString($buffer, null, 28), // already utf-8, just get all the bytes
+            0, 3 => mb_convert_encoding($this->getString($buffer, null, 28), 'UTF-8', 'ISO-8859-1'),
             1, 2 => mb_convert_encoding($this->getRaw($buffer, null, 28 + 2), 'UTF-8', 'UTF-16LE'), // get utf-16 and convert to utf-8
             default => null
         };
