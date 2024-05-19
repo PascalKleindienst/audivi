@@ -1,0 +1,62 @@
+name: PHP Insights
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  phpinsights:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_mysql, gd, zip
+          ini-values: post_max_size=256M, upload_max_filesize=256M
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist
+
+      - name: Run PHP Insights
+        id: phpinsights
+        run: |
+          ./vendor/bin/phpinsights --no-interaction --format=json > phpinsights.json
+          jq '.summary.code' phpinsights.json > insights_score.txt
+
+      - name: Create badge
+        id: badge
+        run: |
+          SCORE=$(jq '. | tonumber | floor' insights_score.txt)
+          BADGE_COLOR=brightgreen
+          if [ "$SCORE" -lt 90 ]; then BADGE_COLOR=yellow; fi
+          if [ "$SCORE" -lt 75 ]; then BADGE_COLOR=orange; fi
+          if [ "$SCORE" -lt 60 ]; then BADGE_COLOR=red; fi
+          curl -o phpinsights-badge.svg "https://img.shields.io/badge/Code_Quality-$SCORE-$BADGE_COLOR"
+
+      - name: Upload badge
+        uses: actions/upload-artifact@v3
+        with:
+          name: phpinsights-badge
+          path: phpinsights-badge.svg
