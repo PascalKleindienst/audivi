@@ -19,16 +19,21 @@ final class ItemData extends Data
     #[Computed]
     public readonly Collection $mediaFiles;
 
+    #[Computed]
+    public readonly ?int $size;
+
     public function __construct(
         public readonly string $folder,
         /** @var Collection<SplFileInfo> */
         public readonly Collection $files,
         public readonly MetaData $meta,
     ) {
-        $this->mediaFiles = $files->filter(static fn (\SplFileInfo $file) => \in_array(
+        $this->mediaFiles = $files->filter(static fn (SplFileInfo $file) => \in_array(
             $file->getExtension(),
             self::AUDIO_TYPES,
             true
         ));
+
+        $this->size = $files->sum(static fn (SplFileInfo $file) => $file->getSize());
     }
 }
