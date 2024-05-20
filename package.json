@@ -1,16 +1,19 @@
 {
     "private": true,
     "type": "module",
-    "engines" : {
-        "npm" : ">=9.0.0",
-        "node" : ">=18.0.0"
+    "engines": {
+        "npm": ">=9.0.0",
+        "node": ">=18.0.0"
     },
     "scripts": {
         "dev": "vite",
         "build": "vite build",
         "ts-check": "vue-tsc --noEmit",
         "lint": "eslint resources/js --fix --ignore-path .gitignore",
-        "format": "prettier resources/js --write"
+        "format": "prettier resources/js --write",
+        "test": "vitest",
+        "test:ui": "vitest --ui",
+        "test:coverage": "vitest run --coverage"
     },
     "devDependencies": {
         "@eslint/js": "^8.57.0",
@@ -24,11 +27,15 @@
         "@typescript-eslint/eslint-plugin": "^7.6.0",
         "@typescript-eslint/parser": "^7.6.0",
         "@vitejs/plugin-vue": "^5.0.0",
+        "@vitest/coverage-v8": "^1.6.0",
+        "@vitest/ui": "^1.6.0",
         "@vue/eslint-config-prettier": "^9.0.0",
+        "@vue/test-utils": "^2.4.6",
         "autoprefixer": "^10.4.16",
         "axios": "^1.6.4",
         "eslint": "^8.57.0",
         "eslint-plugin-vue": "^9.24.1",
+        "jsdom": "^24.0.0",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.32",
         "prettier": "^3.2.5",
@@ -50,6 +57,7 @@
         "lucide-vue-next": "^0.368.0",
         "radix-vue": "^1.7.0",
         "tailwind-merge": "^2.2.2",
-        "tailwindcss-animate": "^1.0.7"
+        "tailwindcss-animate": "^1.0.7",
+        "vitest": "^1.6.0"
     }
 }

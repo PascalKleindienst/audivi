@@ -10,7 +10,7 @@
         "esModuleInterop": true,
         "allowJs": true,
         "lib": ["esnext", "dom"],
-        "types": ["vite/client", "@inertiajs/core", "@inertiajs/vue3", "ziggy-js"],
+        "types": ["vitest/globals", "vite/client", "@inertiajs/core", "@inertiajs/vue3", "ziggy-js"],
         "skipLibCheck": true,
         "baseUrl": ".",
         "paths": {
@@ -20,10 +20,10 @@
         }
     },
     "typeRoots": ["node_modules/@types", "resources/js/types"],
-    "include":[
+    "include": [
         "resources/js/**/*.ts",
         "resources/js/**/*.d.ts",
-        "resources/js/**/*.vue"
+        "resources/js/**/*.vue",
     ],
     "exclude": [
         "node_modules",
