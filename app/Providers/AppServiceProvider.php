@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Library\LibraryService;
 use App\Scanners\ID3\ID3TagScanner;
 use App\Scanners\ID3\ParserService;
 use App\Scanners\Scanner;
@@ -24,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->bind('id3.parser', static fn (Application $app) => $app->make(ParserService::class));
+        $this->app->bind('library.service', static fn (Application $app) => $app->make(LibraryService::class));
     }
 
     /**

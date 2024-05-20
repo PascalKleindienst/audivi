@@ -6,6 +6,8 @@ namespace App\Scanners;
 
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
+use App\Library\LibraryFactory;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +24,7 @@ final class Scanner
      */
     private array $scanners = [];
 
-    public function __construct(private readonly Library $library, private readonly LoggerInterface $logger)
+    public function __construct(private readonly LibraryFactory $library, private readonly LoggerInterface $logger)
     {
     }
 
@@ -32,30 +34,39 @@ final class Scanner
     }
 
     /**
+     * @param string $path
+     * @return ItemData[]
+     */
+    public function getFolderContents(string $path): array
+    {
+        $folder = Storage::disk('library')->fileExists($path) ? File::dirname($path) : $path;
+        $folders = Collection::make(Storage::disk('library')->files($folder, true))
+            ->map(static fn (string $file) => new SplFileInfo(Storage::disk('library')->path($file)))
+            ->groupBy(static fn (SplFileInfo $file) => $file->getPath());
+
+        $items = [];
+        foreach ($folders as $dirname => $files) {
+            $items[] = $this->library->createLibraryItem($dirname, $files);
+        }
+
+        return $items;
+    }
+
+    /**
      * Scan Item / folder path, as one item can have many files / tracks
      *
      * @return MetaData[]
-     *
      * @throws InvalidArgumentException if no files are found in path
      */
     public function scanPath(string $path): array
     {
-        $folder = Storage::fileExists($path) ? File::dirname($path) : $path;
-        $folders = Collection::make(Storage::files($folder, true))
-            ->map(static fn (string $file) => new SplFileInfo(Storage::path($file)))
-            ->groupBy(static fn (SplFileInfo $file) => $file->getPath());
+        $items = $this->getFolderContents($path);
 
-        if ($folders->isEmpty()) {
+        if (empty($items)) {
             throw new InvalidArgumentException('No files found in path: '.$path);
         }
 
-        $items = [];
-        foreach ($folders as $dirname => $files) {
-            $item = $this->library->createLibraryItem($dirname, $files);
-            $items[] = $this->scanItem($item) ?? $item->meta;
-        }
-
-        return $items;
+        return array_map(fn(ItemData $item) => $this->scanItem($item) ?? $item->meta, $items);
     }
 
     public function scanItem(ItemData $item): ?MetaData
