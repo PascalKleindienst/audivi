@@ -7,13 +7,12 @@ use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenDefineFunctions;
 use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses;
 use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenPrivateMethods;
 use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenTraits;
-use NunoMaduro\PhpInsights\Domain\Metrics\Architecture\Classes;
+use PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff;
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use SlevomatCodingStandard\Sniffs\Classes\ForbiddenPublicPropertySniff;
 use SlevomatCodingStandard\Sniffs\Commenting\DocCommentSpacingSniff;
 use SlevomatCodingStandard\Sniffs\Commenting\UselessFunctionDocCommentSniff;
 use SlevomatCodingStandard\Sniffs\ControlStructures\DisallowEmptySniff;
-use SlevomatCodingStandard\Sniffs\Files\LineLengthSniff;
 use SlevomatCodingStandard\Sniffs\Functions\FunctionLengthSniff;
 use SlevomatCodingStandard\Sniffs\Namespaces\AlphabeticallySortedUsesSniff;
 use SlevomatCodingStandard\Sniffs\Namespaces\UseSpacingSniff;
@@ -73,13 +72,13 @@ return [
     */
 
     'exclude' => [
-        'vendor',
         //  'path/to/directory-or-file'
     ],
 
     'add' => [
-        Classes::class => [
-        ],
+        // Classes::class => [
+        //     ForbiddenFinalClasses::class,
+        // ],
     ],
 
     'remove' => [
@@ -95,7 +94,6 @@ return [
         UselessFunctionDocCommentSniff::class,
         DisallowEmptySniff::class,
         DisallowArrayTypeHintSyntaxSniff::class,
-
     ],
 
     'config' => [
@@ -108,12 +106,13 @@ return [
         LineLengthSniff::class => [
             'lineLimit' => 120,
             'absoluteLineLimit' => 160,
+            'ignoreComments' => true,
         ],
         CyclomaticComplexityIsHigh::class => [
             'maxComplexity' => 10,
         ],
         FunctionLengthSniff::class => [
-            'maxLinesLength' => 30,
+            'maxLinesLength' => 40,
         ],
         OrderedImportsFixer::class => [
             'imports_order' => ['class', 'const', 'function'],
@@ -143,7 +142,6 @@ return [
         'min-complexity' => 85,
         'min-architecture' => 85,
         'min-style' => 85,
-        //        'disable-security-check' => false,
     ],
 
     /*
