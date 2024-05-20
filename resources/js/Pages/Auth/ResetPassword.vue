@@ -9,19 +9,19 @@ import TextInput from '@/Components/TextInput.vue';
 
 const props = defineProps({
     email: String,
-    token: String,
+    token: String
 });
 
 const form = useForm({
     token: props.token,
     email: props.email,
     password: '',
-    password_confirmation: '',
+    password_confirmation: ''
 });
 
 const submit = () => {
     form.post(route('password.update'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
+        onFinish: () => form.reset('password', 'password_confirmation')
     });
 };
 </script>
@@ -75,7 +75,7 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <div class="mt-4 flex items-center justify-end">
                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Reset Password
                 </PrimaryButton>
