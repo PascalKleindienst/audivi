@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Library\Library;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request as RequestFacade;
@@ -12,6 +13,9 @@ use Illuminate\Validation\Validator;
 
 class LibraryUploadRequest extends FormRequest
 {
+    /**
+     * @return array<string, string|string[]>
+     */
     public function rules(): array
     {
         return [
@@ -29,24 +33,30 @@ class LibraryUploadRequest extends FormRequest
     public function after(): array
     {
         return [
-            'fileAlreadyExists' => function (Validator $validator) {
-                $filename = basename($validator->getValue('fileName'));
-                $filename = str_replace('..', '', $filename);
-                $folder = str_replace('.zip', '', $filename);
-
-                $this->request->set('normalized_filename', $filename);
-                $this->request->set('normalized_folder', $folder);
-
-                if (RequestFacade::boolean('isFirst') && ! RequestFacade::boolean('overwrite') && Storage::disk('library')->exists($filename)) {
-                    $validator->errors()->add('fileAlreadyExists', 'File already exists');
-                }
-
-                if ($validator->getValue('fileType') === 'application/zip' || $validator->getValue('fileType') === 'application/x-zip-compressed') {
-                    if (RequestFacade::boolean('isFirst') && ! RequestFacade::boolean('overwrite') && Storage::disk('library')->exists($folder)) {
-                        $validator->errors()->add('fileAlreadyExists', 'Folder already exists');
-                    }
-                }
-            },
+            'fileAlreadyExists' => fn (Validator $validator) => $this->checkFileExists($validator),
         ];
+    }
+
+    public function checkFileExists(Validator $validator): void
+    {
+        $filename = basename($validator->getValue('fileName'));
+        $filename = str_replace('..', '', $filename);
+        $folder = Library::getFolderByFilename(str_replace('.zip', '', $filename));
+
+        $this->request->set('normalized_filename', $filename);
+        $this->request->set('normalized_folder', $folder);
+
+        if (! RequestFacade::boolean('overwrite') && RequestFacade::boolean('isFirst')) {
+            if (Storage::disk('library')->exists($folder . '/' . $filename)) {
+                $validator->errors()->add('fileAlreadyExists', 'File already exists');
+            }
+
+            if (
+                \in_array($validator->getValue('fileType'), ['application/zip', 'application/x-zip-compressed'], true) &&
+                Storage::disk('library')->exists($folder)
+            ) {
+                $validator->errors()->add('fileAlreadyExists', 'Folder already exists');
+            }
+        }
     }
 }

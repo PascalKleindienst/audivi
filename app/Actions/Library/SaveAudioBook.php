@@ -48,9 +48,10 @@ final class SaveAudioBook
                             static fn (Track $item) => $item->path === $track->path && $item->position === $track->position
                         )
                         ->isEmpty()
-                );
+                )
+                ->each(static fn (Track $track) => $track->audio_book_id = $book->id);
 
-            $book->tracks()->saveMany($newTracks);
+            $book->tracks()->upsert($newTracks->toArray(), ['position', 'path']);
         }
 
         // save / sync authors
