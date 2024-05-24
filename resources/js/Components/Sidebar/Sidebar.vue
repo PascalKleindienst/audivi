@@ -24,13 +24,13 @@ const closeNavigation = () => {
         }"
         class="fixed bottom-0 start-0 top-0 z-[60] flex w-64 transform flex-col overflow-y-auto border-e border-gray-200 bg-slate-50 py-6 transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 lg:bottom-0 lg:end-auto lg:translate-x-0 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-500 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-slate-700 [&::-webkit-scrollbar]:w-2"
     >
-        <div class="px-4">
+        <div class="px-4" data-testid="sidebar-logo">
             <Link :href="route('dashboard')" class="flex items-center gap-2">
                 <ApplicationLogo class="block h-8 w-auto" />
             </Link>
         </div>
 
-        <nav class="flex w-full flex-col flex-wrap p-4">
+        <nav class="flex w-full flex-col flex-wrap p-4" data-testid="sidebar-nav">
             <ul class="space-y-1.5">
                 <SidebarNavItem
                     :href="route('dashboard')"
@@ -40,7 +40,11 @@ const closeNavigation = () => {
                     {{ trans('navigation.dashboard') }}
                 </SidebarNavItem>
 
-                <SidebarNavItem :href="route('dashboard')" icon="heroicons:book-open" :active="false">
+                <SidebarNavItem
+                    :href="route('audio-books')"
+                    icon="heroicons:book-open"
+                    :active="page.component === 'Books'"
+                >
                     {{ trans('navigation.books') }}
                 </SidebarNavItem>
 
@@ -68,12 +72,12 @@ const closeNavigation = () => {
                     <Icon icon="heroicons:plus-circle" class="size-5" />
                 </span>
             </h4>
-            <ul class="space-y-1.5">
+            <ul class="space-y-1.5" data-testid="sidebar-bookshelf">
                 <SidebarNavItem :href="route('dashboard')" :active="false"> Harry Potter </SidebarNavItem>
             </ul>
         </nav>
 
-        <footer class="mt-auto w-full px-4">
+        <footer class="mt-auto w-full px-4" data-testid="sidebar-footer">
             <ul>
                 <SidebarNavItem :href="route('dashboard')" icon="heroicons:cog-6-tooth" :active="false">
                     {{ trans('navigation.settings') }}
@@ -86,6 +90,7 @@ const closeNavigation = () => {
         v-show="showNavigation"
         style="z-index: 59"
         class="duration fixed inset-0 cursor-pointer bg-gray-900 bg-opacity-50 transition dark:bg-opacity-80"
+        data-testid="sidebar-navigation-toggle"
         @click="closeNavigation()"
     >
         <span class="relative left-64 top-2 p-4">
