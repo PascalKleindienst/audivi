@@ -12,8 +12,6 @@ interface Props {
 const grid = ref<HTMLElement>();
 const props = defineProps<Props>();
 
-console.log(props.options);
-
 useEventListener<'keydown'>(document, 'keydown', (e: KeyboardEvent) => {
     if (
         e.key === 'ArrowUp' ||
@@ -31,7 +29,7 @@ useEventListener<'keydown'>(document, 'keydown', (e: KeyboardEvent) => {
 <template>
     <div
         ref="grid"
-        :class="cn('grid gap-12 [grid-template-columns:repeat(auto-fit,_minmax(250px,_1fr))]', props.class)"
+        :class="cn('grid gap-12 [grid-template-columns:repeat(auto-fill,_minmax(250px,_1fr))]', props.class)"
     >
         <slot />
     </div>
