@@ -98,7 +98,9 @@ class AudioBook extends Model
     protected function casts(): array
     {
         return [
-            'published_at' => 'datetime',
+            'published_at' => 'datetime:' . config('data.date_format'),
+            'created_at' => 'datetime:' . config('data.date_format'),
+            'updated_at' => 'datetime:' . config('data.date_format'),
         ];
     }
 }
