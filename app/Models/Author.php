@@ -48,6 +48,10 @@ class Author extends Model
     {
         return $this->belongsToMany(AudioBook::class);
     }
+
+    /**
+     * @return string[]
+     */
     protected function casts(): array
     {
         return [
