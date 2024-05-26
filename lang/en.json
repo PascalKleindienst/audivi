@@ -21,6 +21,7 @@
     "general.cancel": "Cancel",
     "general.confirm": "Confirm",
     "general.unknown": "Unknown",
+    "general.edit": "Edit",
     "general.save": "Save",
     "general.saved_success": "The entry was saved successfully!",
     "general.done": "Done",
@@ -34,6 +35,7 @@
     "general.api_tokens": "API Tokens",
     "general.upload.drop": "Drop your files here or",
     "general.upload.browse": "browse",
+    "general.most_popular": "Most Popular",
     "navigation.dashboard": "Dashboard",
     "navigation.books": "Books",
     "navigation.categories": "Categories",
@@ -88,5 +90,12 @@
     "library.upload.items.left": ":num left",
     "library.upload.items.successful": ":num successful",
     "library.upload.items.failed": ":num failed",
-    "library.upload.all": "Upload all"
+    "library.upload.all": "Upload all",
+    "author.title": "Authors",
+    "author.name": "Name",
+    "author.description": "Biography",
+    "author.link": "Link",
+    "author.image": "Image",
+    "author.image.select": "Select Image",
+    "author.updated.success": "Author was successfully updated."
 }

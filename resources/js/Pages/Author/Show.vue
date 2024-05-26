@@ -7,6 +7,7 @@ import { Grid, GridItem } from '@/Components/ui/grid';
 import { route } from 'ziggy-js';
 import { Icon } from '@iconify/vue';
 import { Button } from '@/Components/ui/button';
+import { trans } from 'laravel-vue-i18n';
 
 defineProps<{
     author: AuthorData;
@@ -27,7 +28,7 @@ defineProps<{
                 <PageHeader :title="author.name" :description="author.description">
                     <template #actions>
                         <Link :href="route('authors.edit', author.id)" as-child>
-                            <Button variant="secondary">
+                            <Button variant="secondary" :title="trans('general.edit')">
                                 <Icon icon="heroicons:pencil-square" class="size-5" />
                             </Button>
                         </Link>
@@ -43,7 +44,7 @@ defineProps<{
 
     <div class="mt-10">
         <header class="mb-6 flex items-center justify-between">
-            <h2 class="block text-2xl font-bold">Most Popular</h2>
+            <h2 class="block text-2xl font-bold">{{ trans('general.most_popular') }}</h2>
         </header>
 
         <Grid>

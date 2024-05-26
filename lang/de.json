@@ -22,6 +22,7 @@
     "general.confirm": "Bestätigen",
     "general.unknown": "Unbekannt",
     "general.save": "Speichern",
+    "general.edit": "Bearbeiten",
     "general.saved_success": "Der Eintrag wurde erfolgreich gespeichert!",
     "general.done": "Erledigt",
     "general.search": "Suche",
@@ -34,6 +35,7 @@
     "general.api_tokens": "API Tokens",
     "general.upload.drop": "Lege deine Dateien hier ab oder",
     "general.upload.browse": "wähle sie aus",
+    "general.most_popular": "Am beliebtesten",
     "navigation.dashboard": "Dashboard",
     "navigation.books": "Bücher",
     "navigation.categories": "Kategorien",
@@ -88,5 +90,12 @@
     "library.upload.items.left": ":count verbleibend",
     "library.upload.items.successful": ":count erfolgreich",
     "library.upload.items.failed": ":count fehlgeschlagen",
-    "library.upload.all": "Alle hochladen"
+    "library.upload.all": "Alle hochladen",
+    "author.title": "Autoren",
+    "author.name": "Name",
+    "author.description": "Biographie",
+    "author.link": "Link",
+    "author.image": "Bild",
+    "author.image.select": "Bild auswählen",
+    "author.updated.success": "Author wurde erfolgreich aktualisiert."
 }

@@ -5,6 +5,7 @@ import AuthorData = App.Data.AuthorData;
 import PageHeader from '@/Components/PageHeader.vue';
 import { Grid, GridItem } from '@/Components/ui/grid';
 import Pagination from '@/Components/Pagination.vue';
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps<{
     authors: PaginatedDataCollection<AuthorData>;
@@ -12,10 +13,12 @@ const props = defineProps<{
 </script>
 
 <template>
-    <Head title="Authors" />
+    <Head :title="trans('author.title')" />
 
     <PageHeader>
-        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Authors</h2>
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+            {{ trans('author.title') }}
+        </h2>
     </PageHeader>
 
     <Grid>
