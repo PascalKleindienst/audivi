@@ -89,7 +89,7 @@ jobs:
           fail_ci_if_error: true
 
       - name: Run frontend tests
-        run: npm run test:coverage
+        run: LARAVEL_BYPASS_ENV_CHECK=1 npm run test:coverage
 
       - name: Upload frontend coverage report to Codecov
         uses: codecov/codecov-action@v4.0.1
