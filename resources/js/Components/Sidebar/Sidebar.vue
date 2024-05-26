@@ -56,7 +56,11 @@ const closeNavigation = () => {
                     {{ trans('navigation.series') }}
                 </SidebarNavItem>
 
-                <SidebarNavItem :href="route('dashboard')" icon="heroicons:pencil-square" :active="false">
+                <SidebarNavItem
+                    :href="route('authors.index')"
+                    icon="heroicons:pencil-square"
+                    :active="page.component?.startsWith('Author/')"
+                >
                     {{ trans('navigation.authors') }}
                 </SidebarNavItem>
 

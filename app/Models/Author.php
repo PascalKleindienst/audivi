@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -47,5 +47,12 @@ class Author extends Model
     public function audioBooks(): BelongsToMany
     {
         return $this->belongsToMany(AudioBook::class);
+    }
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime:' . config('data.date_format'),
+            'updated_at' => 'datetime:' . config('data.date_format'),
+        ];
     }
 }
