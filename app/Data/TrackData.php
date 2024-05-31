@@ -15,6 +15,7 @@ final class TrackData extends Data
         public readonly ?string $path = null,
         public readonly ?float $start = null,
         public readonly ?float $end = null,
+        public readonly ?int $duration = null,
     ) {
     }
 }

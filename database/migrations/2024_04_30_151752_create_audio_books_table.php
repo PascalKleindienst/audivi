@@ -20,6 +20,7 @@ return new class() extends Migration
             $table->float('rating')->nullable();
             $table->string('cover')->nullable();
             $table->string('language')->nullable();
+            $table->integer('duration')->nullable();
             $table->dateTime('published_at')->nullable();
             $table->timestamps();
         });

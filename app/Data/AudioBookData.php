@@ -29,6 +29,7 @@ final class AudioBookData extends Data
         public readonly ?float $rating,
         public readonly ?string $cover, // TODO: Absolute URL Transform?
         public readonly ?string $language,
+        public readonly ?int $duration,
         public readonly Lazy|Collection $authors,
         public readonly Lazy|Collection $tracks,
         public readonly Lazy|SeriesData|null $series = null,
@@ -61,6 +62,7 @@ final class AudioBookData extends Data
             rating: $book->rating,
             cover: $book->cover ? Storage::disk('public')->url($book->cover) : null,
             language: $book->language,
+            duration: $book->duration,
             authors: Lazy::create(static fn () => AuthorData::collect($book->authors)),
             tracks: Lazy::create(static fn () => TrackData::collect($book->tracks)),
             series: Lazy::create(static fn () => $book->series ? SeriesData::from($book->series) : null),
@@ -83,6 +85,7 @@ final class AudioBookData extends Data
             rating: null,
             cover: $metadata->cover,
             language: $metadata->language,
+            duration: $metadata->duration,
             authors: AuthorData::collect($metadata->authors, Collection::class),
             tracks: TrackData::collect($metadata->tracks, Collection::class),
             series: SeriesData::from($metadata->series),

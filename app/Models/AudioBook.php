@@ -69,6 +69,7 @@ class AudioBook extends Model
         'rating',
         'cover',
         'language',
+        'duration',
         'published_at',
     ];
 

@@ -71,9 +71,79 @@ final class ID3TagScanner extends AudioFileScanner
 
         $metadata['cover'] = $this->cover;
         $metadata['tracks'] = $this->tracks;
+        $metadata['duration'] = array_sum(array_map(static fn (TrackData $track) => $track->duration ?? 0, $this->tracks));
 
         return MetaData::from($metadata + $item->meta->toArray());
     }
+
+    protected function getDuration(SplFileInfo $file): int
+    {
+        $fileHandle = $file->openFile('rb');
+        if (!$fileHandle->isReadable()) {
+            return 0;
+        }
+
+        if (!$fileHandle->getSize()) {
+            return 0;
+        }
+
+        $duration = 0;
+
+        // Read the first 10 bytes to check for ID3v2 tag
+        $header = $fileHandle->fread(10);
+        if (\strlen($header) < 10) {
+            return 0;
+        }
+
+        // Check for ID3v2 tag
+        if (str_starts_with($header, 'ID3')) {
+            $id3v2Size = (\ord($header[6]) << 21) | (\ord($header[7]) << 14) | (\ord($header[8]) << 7) | \ord($header[9]);
+            $fileHandle->fseek($id3v2Size, SEEK_CUR);
+        } else {
+            $fileHandle->fseek(-10, SEEK_CUR);
+        }
+
+        $bitrates = [0, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 160000, 192000, 224000, 256000, 320000];
+        $samplerates = [44100, 48000, 32000];
+
+        // Read through the MP3 file
+        while (!$fileHandle->eof()) {
+            // Read the MP3 frame header
+            $frameHeader = $fileHandle->fread( 4);
+            if (\strlen($frameHeader) < 4) {
+                break;
+            }
+
+            // Check for frame sync (11 bits set)
+            if ((\ord($frameHeader[0]) & 0xFF) !== 0xFF || (\ord($frameHeader[1]) & 0xE0) !== 0xE0) {
+                break;
+            }
+
+            $bitrateIndex = (\ord($frameHeader[2]) & 0xF0) >> 4;
+            $sampleRateIndex = (\ord($frameHeader[2]) & 0x0C) >> 2;
+
+
+            $bitrate = $bitrates[$bitrateIndex] ?? null;
+            $samplerate = $samplerates[$sampleRateIndex] ?? null;
+
+            if ($bitrate === null || $samplerate === null) {
+                break;
+            }
+
+            // Calculate frame length in bytes
+            $padding = (\ord($frameHeader[2]) & 0x02) >> 1;
+            $frameLength = (144 * $bitrate) / $samplerate + $padding;
+
+            // Calculate duration of the frame
+            $frameDuration = (1152 / $samplerate);
+            $duration += $frameDuration;
+
+            $fileHandle->fseek((int) $frameLength - 4, SEEK_CUR);
+        }
+
+        return (int) floor($duration);
+    }
+
 
     protected function parseFileContent(ItemData $item, SplFileInfo $file, string $content): void
     {
@@ -103,7 +173,8 @@ final class ID3TagScanner extends AudioFileScanner
         $this->tracks[] = TrackData::from([
             'title' => $tag->title ?? 'UNKNOWN',
             'position' => $tag->track,
-            'path' => $file->getPath(),
+            'path' => $file->getBasename(),
+            'duration' => $this->getDuration($file),
         ]);
     }
 }

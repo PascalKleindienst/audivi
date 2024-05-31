@@ -42,16 +42,9 @@ final class SaveAudioBook
         // save tracks
         if (! empty($data->tracks) && $data->tracks instanceof Collection) {
             $newTracks = $data->tracks->map(static fn (TrackData $track) => new Track($track->toArray()))
-                ->where(
-                    static fn (Track $track) => $book->tracks
-                        ->filter(
-                            static fn (Track $item) => $item->path === $track->path && $item->position === $track->position
-                        )
-                        ->isEmpty()
-                )
                 ->each(static fn (Track $track) => $track->audio_book_id = $book->id);
 
-            $book->tracks()->upsert($newTracks->toArray(), ['position', 'path']);
+            $book->tracks()->upsert($newTracks->toArray(), ['position', 'audio_book_id']);
         }
 
         // save / sync authors

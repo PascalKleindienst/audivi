@@ -21,6 +21,7 @@ final class MetaData extends Data
         public readonly ?string $cover = null,
         public readonly ?string $language = null,
         public readonly string $path = '.',
+        public readonly ?int $duration = null,
         /** @var string[] */
         #[WithCast(AuthorCast::class)]
         public readonly array $authors = [],

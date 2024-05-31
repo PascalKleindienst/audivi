@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $title
@@ -44,6 +44,7 @@ class Track extends Model
         'path',
         'start',
         'end',
+        'duration'
     ];
 
     public function audioBook(): BelongsTo
