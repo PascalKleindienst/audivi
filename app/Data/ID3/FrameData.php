@@ -21,7 +21,7 @@ final class FrameData extends Data
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'],
+            id: (string) $data['id'],
             type: $data['type'],
             value: $data['value'] ?? null
         );

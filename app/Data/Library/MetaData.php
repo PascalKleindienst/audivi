@@ -8,7 +8,7 @@ use App\Data\ID3\TrackData;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
 
-final class MetaData extends Data
+final class MetaData extends Data implements \Stringable
 {
     public function __construct(
         public readonly ?string $title,
@@ -28,5 +28,20 @@ final class MetaData extends Data
         /** @var TrackData[] */
         public readonly array $tracks = []
     ) {
+    }
+
+    public function __toString(): string
+    {
+        $title = $this->title;
+
+        if ($this->subtitle) {
+            $title .= " - {$this->subtitle}";
+        }
+
+        if ($this->series) {
+            $title .= " [{$this->series}]";
+        }
+
+        return $title ?? 'UNKNOWN';
     }
 }

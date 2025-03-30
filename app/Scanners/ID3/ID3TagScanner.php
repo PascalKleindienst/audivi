@@ -11,6 +11,8 @@ use App\Data\ID3\TrackData;
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
 use App\Scanners\AudioFileScanner;
+use App\ValueObjects\Buffer;
+use App\ValueObjects\Version;
 use DateTime;
 use Illuminate\Support\Arr;
 use SplFileInfo;
@@ -27,7 +29,7 @@ final class ID3TagScanner extends AudioFileScanner
     /** @var TagData[] */
     private array $tags = [];
 
-    /** @var array{title: ?string, position: ?string, path: string}[] */
+    /** @var TrackData[] */
     private array $tracks = [];
 
     public function scanItem(ItemData $item): MetaData
@@ -79,11 +81,7 @@ final class ID3TagScanner extends AudioFileScanner
     protected function getDuration(SplFileInfo $file): int
     {
         $fileHandle = $file->openFile('rb');
-        if (!$fileHandle->isReadable()) {
-            return 0;
-        }
-
-        if (!$fileHandle->getSize()) {
+        if (! $fileHandle->isReadable() || ! $fileHandle->getSize()) {
             return 0;
         }
 
@@ -107,9 +105,9 @@ final class ID3TagScanner extends AudioFileScanner
         $samplerates = [44100, 48000, 32000];
 
         // Read through the MP3 file
-        while (!$fileHandle->eof()) {
+        while (! $fileHandle->eof()) {
             // Read the MP3 frame header
-            $frameHeader = $fileHandle->fread( 4);
+            $frameHeader = $fileHandle->fread(4);
             if (\strlen($frameHeader) < 4) {
                 break;
             }
@@ -121,7 +119,6 @@ final class ID3TagScanner extends AudioFileScanner
 
             $bitrateIndex = (\ord($frameHeader[2]) & 0xF0) >> 4;
             $sampleRateIndex = (\ord($frameHeader[2]) & 0x0C) >> 2;
-
 
             $bitrate = $bitrates[$bitrateIndex] ?? null;
             $samplerate = $samplerates[$sampleRateIndex] ?? null;
@@ -144,11 +141,10 @@ final class ID3TagScanner extends AudioFileScanner
         return (int) floor($duration);
     }
 
-
-    protected function parseFileContent(ItemData $item, SplFileInfo $file, string $content): void
+    protected function parseFileContent(ItemData $item, SplFileInfo $file, Buffer $content): void
     {
         // Parse ID3 Tag
-        $tag = Parser::parseTag($content);
+        $tag = Parser::parseTag($content, Version::from(0, 0));
         if ($tag === null) {
             return;
         }
@@ -172,7 +168,7 @@ final class ID3TagScanner extends AudioFileScanner
         $this->tags[] = $tag;
         $this->tracks[] = TrackData::from([
             'title' => $tag->title ?? 'UNKNOWN',
-            'position' => $tag->track,
+            'position' => $tag->track ?? 1,
             'path' => $file->getBasename(),
             'duration' => $this->getDuration($file),
         ]);

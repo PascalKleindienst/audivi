@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Utils;
 
+use App\ValueObjects\Buffer;
+
 trait FileByteReader
 {
     protected const UINT8 = 1;
@@ -36,30 +38,29 @@ trait FileByteReader
     /**
      * Get the buffer content at a specific position cast as an unsigned integer.
      */
-    protected function getUint(string $buffer, int $position, int $byteSize = self::UINT8): int
+    protected function getUint(Buffer $buffer, int $position, int $byteSize = self::UINT8): int
     {
-        return (int) (hexdec(bin2hex(substr($buffer, $position, $byteSize))));
+        return (int) (hexdec(bin2hex(substr($buffer->content, $position, $byteSize))));
     }
 
     /**
      * Get a portion of the buffer as raw bytes without any casting/transforming.
      */
-    protected function getRaw(string $buffer, ?int $length, int $offset = 0): string
+    protected function getRaw(Buffer $buffer, ?int $length, int $offset = 0): Buffer
     {
-        return substr($buffer, $offset, $length);
+        return Buffer::from(substr($buffer->content, $offset, $length));
     }
 
     /**
      * Get a portion of the buffer cast to a string.
      */
-    protected function getString(string $buffer, ?int $length, int $offset = 0): string
+    protected function getString(Buffer $buffer, ?int $length, int $offset = 0): Buffer
     {
         $string = '';
         $buffer = $this->getRaw($buffer, $length, $offset);
-        $limit = mb_strlen($buffer);
 
-        for ($i = 0; $i < $limit; $i++) {
-            $char = $buffer[$i];
+        for ($i = 0; $i < $buffer->length; $i++) {
+            $char = $buffer->content[$i];
             $ord = mb_ord($char) ?: mb_ord($char, 'Windows-1252'); // fallback to Windows-1252 if not UTF-8
 
             if (
@@ -70,6 +71,6 @@ trait FileByteReader
             }
         }
 
-        return $string;
+        return Buffer::from($string);
     }
 }

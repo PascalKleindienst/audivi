@@ -6,46 +6,56 @@ namespace App\Scanners\ID3;
 
 use App\Data\ID3\FrameData;
 use App\Data\ID3\TagData;
+use App\Scanners\ParserError;
 use App\Utils\FileByteReader;
+use App\ValueObjects\Buffer;
+use App\ValueObjects\Version;
 
-final class ParserService
+final readonly class ParserService
 {
     use FileByteReader;
 
     public function __construct(
-        private readonly TagParser $tagParser,
-        private readonly FrameParser $frameParser,
-        private readonly LegacyTagParser $legacyTagParser,
-        private readonly LegacyFrameParser $legacyFrameParser,
+        private TagParser $tagParser,
+        private FrameParser $frameParser,
+        private LegacyTagParser $legacyTagParser,
+        private LegacyFrameParser $legacyFrameParser,
     ) {
     }
 
-    public function parseTag(string $buffer): ?TagData
+    /**
+     * @throws ParserError
+     */
+    public function parseTag(Buffer $buffer, Version $version): ?TagData
     {
         $data = null;
 
-        if ($this->legacyTagParser->check($buffer)) {
+        if ($this->legacyTagParser->check($version, $buffer)) {
             $data = $this->legacyTagParser->parse($buffer);
         }
 
-        if ($this->tagParser->check($buffer)) {
+        if ($this->tagParser->check($version, $buffer)) {
+            // $this->tagParser->setDefault($data?->toArray() ?? []);
             $data = $this->tagParser->parse($buffer, $data?->toArray() ?? []);
         }
 
         return $data;
     }
 
-    public function parseFrame(string $buffer, int $majorVersion): ?FrameData
+    /**
+     * @throws ParserError
+     */
+    public function parseFrame(Buffer $buffer, Version $version): FrameData
     {
         // Parse Legacy (< id3v2.3)
-        if ($this->legacyFrameParser->check($majorVersion)) {
+        if ($this->legacyFrameParser->check($version, $buffer)) {
             return $this->legacyFrameParser->parse($buffer);
         }
 
         return $this->frameParser->parse($buffer);
     }
 
-    public function isFrame(string $buffer, int $position): bool
+    public function isFrame(Buffer $buffer, int $position): bool
     {
         for ($i = 0; $i < 3; $i++) {
             $frameBit = $this->getUint($buffer, $position + $i);

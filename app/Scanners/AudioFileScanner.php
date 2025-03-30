@@ -6,13 +6,14 @@ namespace App\Scanners;
 
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
+use App\ValueObjects\Buffer;
 use Psr\Log\LoggerInterface;
 
 abstract class AudioFileScanner implements FileScannerInterface
 {
     protected const MAX_FILE_CONTENT = 16 * 1024 * 1024; // 16 MiB
 
-    public function __construct(protected readonly LoggerInterface $log)
+    public function __construct(protected LoggerInterface $log)
     {
     }
 
@@ -30,6 +31,7 @@ abstract class AudioFileScanner implements FileScannerInterface
                 continue;
             }
 
+            // TODO: Use File::
             $resource = fopen($file->getPathname(), 'rb');
 
             if (empty($resource)) {
@@ -47,7 +49,7 @@ abstract class AudioFileScanner implements FileScannerInterface
                 continue;
             }
 
-            $this->parseFileContent($item, $file, $content);
+            $this->parseFileContent($item, $file, Buffer::from($content));
         }
 
         return $this->prepareScanResult($item);
@@ -61,5 +63,5 @@ abstract class AudioFileScanner implements FileScannerInterface
         return $item->meta;
     }
 
-    abstract protected function parseFileContent(ItemData $item, \SplFileInfo $file, string $content): void;
+    abstract protected function parseFileContent(ItemData $item, \SplFileInfo $file, Buffer $content): void;
 }

@@ -9,13 +9,25 @@ use App\Data\ID3\FrameType;
 use App\Data\ID3\Genre;
 use App\Data\ID3\ImageType;
 use App\Data\ID3\ImageValueData;
+use App\Scanners\ParserError;
 use App\Utils\FileByteReader;
+use App\ValueObjects\Buffer;
+use App\ValueObjects\Version;
+use Spatie\LaravelData\Data;
 
-final class FrameParser
+/**
+ * @implements \App\Scanners\Parser<FrameData>
+ */
+final readonly class FrameParser implements \App\Scanners\Parser
 {
     use FileByteReader;
 
-    public function parse(string $buffer): ?FrameData
+    public function check(Version $version, Buffer $buffer): bool
+    {
+        return true;
+    }
+
+    public function parse(Buffer $buffer): Data
     {
         $header = [
             'id' => $this->getRaw($buffer, 4),
@@ -26,12 +38,12 @@ final class FrameParser
 
         // No support for compressed, unsychronised, etc frames
         if ($header['flags'][1] !== 0) {
-            return null;
+            throw new ParserError('Unsynchronised frames are not supported');
         }
 
-        $matchedType = FrameType::from($header['id']);
+        $matchedType = FrameType::from($header['id']->content);
         if ($matchedType === null) {
-            return null;
+            throw new ParserError('Unsupported frame type: ' . $header['id']);
         }
 
         // Get Frame Values for frame type
@@ -40,13 +52,13 @@ final class FrameParser
         $result['id'] = $header['id'];
         $result['type'] = $matchedType;
 
-        if ($header['type'] === 'T') {
+        if ($header['type']->content === 'T') {
             $result['value'] = $this->parseTextFrame($buffer, $header);
-        } elseif ($header['type'] === 'W') {
-            $result['value'] = $this->getString($buffer, null, 10);
-        } elseif ($header['id'] === 'APIC') {
+        } elseif ($header['type']->content === 'W') {
+            $result['value'] = $this->getString($buffer, null, 10)->content;
+        } elseif ($header['id']->content === 'APIC') {
             $result['value'] = $this->parsePicture($buffer);
-        } elseif ($header['type'] === 'C') {
+        } elseif ($header['type']->content === 'C') {
             $result['value'] = $this->parseComment($buffer);
         }
 
@@ -54,34 +66,34 @@ final class FrameParser
     }
 
     /**
-     * @param  array{id: string, type: string, size: int, flags: int[]}  $header
+     * @param  array{id: Buffer, type: Buffer, size: int, flags: int[]}  $header
      */
-    private function parseTextFrame(string $buffer, array $header): string|Genre|null
+    private function parseTextFrame(Buffer $buffer, array $header): string|Genre|null
     {
         $encoding = $this->getUint($buffer, 10);
         $val = match ($encoding) {
-            0, 3 => mb_convert_encoding($this->getString($buffer, null, 11), 'UTF-8', 'ISO-8859-1'),
-            1, 2 => mb_convert_encoding($this->getRaw($buffer, null, 11 + 2), 'UTF-8', 'UTF-16LE'), // get utf-16 and convert to utf-8
+            0, 3 => $this->getString($buffer, null, 11)->convert(),
+            1, 2 => $this->getRaw($buffer, null, 11 + 2)->convert(from: 'UTF-16LE'), // get utf-16 and convert to utf-8
             default => null
         };
 
-        if ($header['id'] === 'TCON' && \is_string($val)) {
+        if ($header['id']->content === 'TCON' && \is_string($val)) {
             $val = Genre::tryFrom((int) trim($val, '()'));
         }
 
         return $val;
     }
 
-    private function parseComment(string $buffer): ?string
+    private function parseComment(Buffer $buffer): ?string
     {
         return match ($this->getUint($buffer, 10)) {
-            0, 3 => mb_convert_encoding($this->getString($buffer, null, 28), 'UTF-8', 'ISO-8859-1'),
-            1, 2 => mb_convert_encoding($this->getRaw($buffer, null, 28 + 2), 'UTF-8', 'UTF-16LE'), // get utf-16 and convert to utf-8
+            0, 3 => $this->getString($buffer, null, 28)->convert(),
+            1, 2 => $this->getRaw($buffer, null, 28 + 2)->convert(from: 'UTF-16LE'), // get utf-16 and convert to utf-8
             default => null
         };
     }
 
-    private function parsePicture(string $buffer): ImageValueData
+    private function parsePicture(Buffer $buffer): ImageValueData
     {
         $encoding = $this->getUint($buffer, 10);
         $bytes = 1;
@@ -92,7 +104,7 @@ final class FrameParser
         }
 
         $variableStart = 11;
-        $variableLength = (strpos($buffer, \chr(0), $variableStart) ?: 0) - $variableStart;
+        $variableLength = $buffer->position(\chr(0), $variableStart) - $variableStart;
         $imageType = $this->getUint($buffer, $variableStart + $variableLength + 1);
 
         $image = [
@@ -101,17 +113,14 @@ final class FrameParser
         ];
 
         $variableStart += $variableLength + (2 * $bytes);
-        $variableLength = (strpos($buffer, mb_chr(0, $charset), $variableStart) ?: 0) - $variableStart;
+        $variableLength = $buffer->position(mb_chr(0, $charset), $variableStart) - $variableStart;
 
         if ($variableLength !== 0) {
             $image['description'] = match ($encoding) {
                 0, 3 => $this->getString($buffer, $variableLength, $variableStart),
-                1 => mb_convert_encoding(
+                1 =>
                     // unsure if +1 or +bytes
-                    $this->getRaw($buffer, $variableLength + 1, $variableStart),
-                    'UTF-8',
-                    'UTF-16LE'
-                ),
+                    $this->getRaw($buffer, $variableLength + 1, $variableStart)->convert(from: 'UTF-16LE'),
                 default => null
             };
         }

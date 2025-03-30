@@ -9,18 +9,24 @@ use App\Data\ID3\FrameType;
 use App\Data\ID3\Genre;
 use App\Data\ID3\ImageType;
 use App\Data\ID3\ImageValueData;
+use App\Scanners\ParserError;
 use App\Utils\FileByteReader;
+use App\ValueObjects\Buffer;
+use App\ValueObjects\Version;
 
-final class LegacyFrameParser
+/**
+ * @implements \App\Scanners\Parser<FrameData>
+ */
+final readonly class LegacyFrameParser implements \App\Scanners\Parser
 {
     use FileByteReader;
 
-    public function check(int $majorVersion): bool
+    public function check(Version $version, Buffer $buffer): bool
     {
-        return $majorVersion < 3;
+        return $version->major < 3;
     }
 
-    public function parse(string $buffer): ?FrameData
+    public function parse(Buffer $buffer): FrameData
     {
         $header = [
             'id' => $this->getRaw($buffer, 3),
@@ -28,9 +34,9 @@ final class LegacyFrameParser
             'size' => $this->getUint($buffer, 3, self::UINT24),
         ];
 
-        $matchedType = FrameType::from($header['id']);
+        $matchedType = FrameType::from($header['id']->content);
         if ($matchedType === null) {
-            return null;
+            throw new ParserError('Unsupported frame type: ' . $header['id']);
         }
 
         // Get Frame Values for frame type
@@ -38,25 +44,25 @@ final class LegacyFrameParser
         $result['id'] = $header['id'];
         $result['type'] = $matchedType;
 
-        if ($header['type'] === 'T') {
+        if ($header['type']->content === 'T') {
             $value = $this->getString($buffer, null, 7);
-            $genre = (int) trim($value, '()');
+            $genre = (int) trim($value->content, '()');
 
-            if ($header['id'] === 'TCO') {
+            if ($header['id']->content === 'TCO') {
                 $value = Genre::tryFrom($genre);
             }
 
             $result['value'] = $value;
-        } elseif ($header['type'] === 'W') {
+        } elseif ($header['type']->content === 'W') {
             $result['value'] = $this->getString($buffer, null, 7);
-        } elseif ($header['id'] === 'PIC') {
+        } elseif ($header['id']->content === 'PIC') {
             $variableStart = 11;
-            $variableLength = (strpos($buffer, \chr(0), $variableStart) ?: 0) - $variableStart;
+            $variableLength = $buffer->position(\chr(0), $variableStart) - $variableStart;
             $imageType = $this->getUint($buffer, 11);
 
             $result['value'] = ImageValueData::from([
                 'type' => ImageType::tryFrom($imageType) ?? ImageType::OTHER,
-                'mime' => 'image/'.strtolower($this->getString($buffer, 3, 7)),
+                'mime' => 'image/'.strtolower($this->getString($buffer, 3, 7)->content),
                 'description' => $variableLength === 0
                     ? null
                     : $this->getString($buffer, $variableLength, $variableStart),
