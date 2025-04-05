@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Library;
+namespace App\Services;
 
 use DateTime;
 
@@ -109,6 +109,6 @@ final class LibraryService
             $folder = $subtitle['title'];
         }
 
-        return preg_replace('/[^a-z0-9_-]/i', '', $folder);
+        return preg_replace('/[^a-z0-9_-]/i', '', $folder) ?? $folder;
     }
 }

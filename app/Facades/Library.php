@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Library;
+namespace App\Facades;
 
+use App\Services\LibraryService;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -13,6 +14,6 @@ class Library extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'library.service';
+        return LibraryService::class;
     }
 }

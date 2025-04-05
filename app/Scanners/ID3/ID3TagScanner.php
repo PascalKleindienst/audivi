@@ -11,11 +11,12 @@ use App\Data\ID3\TrackData;
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
 use App\Scanners\AudioFileScanner;
+use App\Scanners\ParserError;
 use App\ValueObjects\Buffer;
 use App\ValueObjects\Version;
 use DateTime;
 use Illuminate\Support\Arr;
-use SplFileInfo;
+use Illuminate\Support\Facades\Storage;
 use TypeError;
 
 /**
@@ -32,21 +33,23 @@ final class ID3TagScanner extends AudioFileScanner
     /** @var TrackData[] */
     private array $tracks = [];
 
-    public function scanItem(ItemData $item): MetaData
+    public function setItem(ItemData $item): void
     {
         // Reset in-memory cache, to avoid leaking data to next items!
         $this->tags = [];
         $this->tracks = [];
         $this->cover = null;
 
-        return parent::scanItem($item);
+        parent::setItem($item);
     }
 
     /**
      * @throws TypeError if non of the media files contian ID3 Tags and therefore no metadata could be parsed!
      */
-    protected function prepareScanResult(ItemData $item): MetaData
+    public function prepareScanResult(): MetaData
     {
+        $item = $this->item;
+
         if (empty($this->tags)) {
             throw new TypeError('Media Files do not contain ID3 Tags!');
         }
@@ -78,37 +81,42 @@ final class ID3TagScanner extends AudioFileScanner
         return MetaData::from($metadata + $item->meta->toArray());
     }
 
-    protected function getDuration(SplFileInfo $file): int
+    protected function getDuration(string $file): int
     {
-        $fileHandle = $file->openFile('rb');
-        if (! $fileHandle->isReadable() || ! $fileHandle->getSize()) {
+        $storage = Storage::disk('library');
+        if (! $storage->exists($file) || ! $storage->size($file)) {
             return 0;
         }
 
         $duration = 0;
 
         // Read the first 10 bytes to check for ID3v2 tag
-        $header = $fileHandle->fread(10);
-        if (\strlen($header) < 10) {
+        $stream = $storage->readStream($file);
+        if ($stream === null) {
+            return 0;
+        }
+
+        $header = fread($stream, 10);
+        if (! $header || \strlen($header) < 10) {
             return 0;
         }
 
         // Check for ID3v2 tag
         if (str_starts_with($header, 'ID3')) {
             $id3v2Size = (\ord($header[6]) << 21) | (\ord($header[7]) << 14) | (\ord($header[8]) << 7) | \ord($header[9]);
-            $fileHandle->fseek($id3v2Size, SEEK_CUR);
+            fseek($stream, $id3v2Size, SEEK_CUR);
         } else {
-            $fileHandle->fseek(-10, SEEK_CUR);
+            fseek($stream, -10, SEEK_CUR);
         }
 
         $bitrates = [0, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 160000, 192000, 224000, 256000, 320000];
         $samplerates = [44100, 48000, 32000];
 
         // Read through the MP3 file
-        while (! $fileHandle->eof()) {
+        while (! feof($stream)) {
             // Read the MP3 frame header
-            $frameHeader = $fileHandle->fread(4);
-            if (\strlen($frameHeader) < 4) {
+            $frameHeader = fread($stream, 4);
+            if (! $frameHeader || \strlen($frameHeader) < 4) {
                 break;
             }
 
@@ -135,13 +143,16 @@ final class ID3TagScanner extends AudioFileScanner
             $frameDuration = (1152 / $samplerate);
             $duration += $frameDuration;
 
-            $fileHandle->fseek((int) $frameLength - 4, SEEK_CUR);
+            fseek($stream, (int) $frameLength - 4, SEEK_CUR);
         }
 
         return (int) floor($duration);
     }
 
-    protected function parseFileContent(ItemData $item, SplFileInfo $file, Buffer $content): void
+    /**
+     * @throws ParserError
+     */
+    protected function parseFileContent(ItemData $item, string $file, Buffer $content): void
     {
         // Parse ID3 Tag
         $tag = Parser::parseTag($content, Version::from(0, 0));
@@ -159,9 +170,9 @@ final class ID3TagScanner extends AudioFileScanner
 
             $coverContent = $cover->data;
             $track = $tag->track && $tag->track !== '1' ? $tag->track : '';
-            $this->cover = $file->getPath()."/Cover{$track}.{$extension}";
+            $this->cover = \dirname($file)."/Cover{$track}.{$extension}";
 
-            file_put_contents($this->cover, $coverContent);
+            Storage::disk('library')->put($this->cover, $coverContent);
         }
 
         // Add Tag and track
@@ -169,8 +180,9 @@ final class ID3TagScanner extends AudioFileScanner
         $this->tracks[] = TrackData::from([
             'title' => $tag->title ?? 'UNKNOWN',
             'position' => $tag->track ?? 1,
-            'path' => $file->getBasename(),
+            'path' => basename($file),
             'duration' => $this->getDuration($file),
+            'mTime' => Storage::disk('library')->lastModified($file),
         ]);
     }
 }

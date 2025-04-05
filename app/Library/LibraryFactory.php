@@ -8,12 +8,11 @@ use App\Actions\Library\SaveAudioBook;
 use App\Data\AudioBookData;
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
-use App\Library\Library as LibraryService;
+use App\Facades\Library;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use SplFileInfo;
 
 final class LibraryFactory
 {
@@ -32,7 +31,7 @@ final class LibraryFactory
     }
 
     /**
-     * @param  Collection<SplFileInfo>  $files
+     * @param  Collection<string>  $files
      */
     public function createLibraryItem(string $folder, Collection $files): ItemData
     {
@@ -50,13 +49,13 @@ final class LibraryFactory
         if (\count($splitDir) > 1) {
             $meta['series'] = array_pop($splitDir);
 
-            $series = LibraryService::matchBySeries($meta['title']);
+            $series = Library::matchBySeries($meta['title']);
             if ($series) {
                 $meta['title'] = $series['title'];
                 $meta['volume'] = $series['volume'];
             }
 
-            $volume = LibraryService::matchByVolume($meta['title']);
+            $volume = Library::matchByVolume($meta['title']);
             if ($volume) {
                 $meta['title'] = $volume['title'];
                 $meta['volume'] = $volume['volume'];
@@ -68,14 +67,14 @@ final class LibraryFactory
         }
 
         // Get Published Date
-        $publishedMatch = LibraryService::matchByPublished($meta['title']);
+        $publishedMatch = Library::matchByPublished($meta['title']);
         if ($publishedMatch) {
             $meta['published'] = $publishedMatch['published'];
             $meta['title'] = $publishedMatch['title'];
         }
 
         // TODO: Add option to not parse subtitle
-        $subtitleMatch = LibraryService::matchBySubtitle($meta['title']);
+        $subtitleMatch = Library::matchBySubtitle($meta['title']);
         if ($subtitleMatch) {
             $meta['title'] = $subtitleMatch['title'];
             $meta['subtitle'] = $subtitleMatch['subtitle'];

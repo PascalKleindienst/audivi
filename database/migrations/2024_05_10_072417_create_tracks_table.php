@@ -18,8 +18,9 @@ return new class extends Migration
             $table->float('start')->nullable();
             $table->float('end')->nullable();
             $table->integer('duration')->nullable();
+            $table->integer('mTime')->default(0);
             $table->foreignId('audio_book_id')->constrained()->onDelete('cascade');
-            $table->unique(['audio_book_id', 'position']);
+            $table->unique(['audio_book_id', 'position', 'path']);
         });
     }
 

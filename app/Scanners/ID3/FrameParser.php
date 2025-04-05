@@ -43,7 +43,7 @@ final readonly class FrameParser implements \App\Scanners\Parser
 
         $matchedType = FrameType::from($header['id']->content);
         if ($matchedType === null) {
-            throw new ParserError('Unsupported frame type: ' . $header['id']);
+            throw new ParserError('Unsupported frame type: '.$header['id']);
         }
 
         // Get Frame Values for frame type

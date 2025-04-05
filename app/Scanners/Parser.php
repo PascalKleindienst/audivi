@@ -17,6 +17,7 @@ interface Parser
 
     /**
      * @phpstan-return T
+     *
      * @throws ParserError
      */
     public function parse(Buffer $buffer): Data;

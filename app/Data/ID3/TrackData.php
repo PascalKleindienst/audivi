@@ -13,6 +13,7 @@ final class TrackData extends Data
         public readonly int $position = 1,
         public readonly ?string $path = null,
         public readonly ?int $duration = null,
+        public readonly int $mTime = 0
     ) {
     }
 }

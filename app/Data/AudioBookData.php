@@ -77,7 +77,7 @@ final class AudioBookData extends Data
     {
         return new self(
             id: null,
-            title: $metadata->title,
+            title: $metadata->title ?? 'UNKNOWN',
             path: $metadata->path,
             subtitle: $metadata->subtitle,
             volume: $metadata->volume,

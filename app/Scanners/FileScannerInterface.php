@@ -6,8 +6,13 @@ namespace App\Scanners;
 
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
+use App\Data\Library\ScanResultData;
 
 interface FileScannerInterface
 {
-    public function scanItem(ItemData $item): MetaData;
+    public function setItem(ItemData $item): void;
+
+    public function scan(string $file): ScanResultData;
+
+    public function prepareScanResult(): MetaData;
 }

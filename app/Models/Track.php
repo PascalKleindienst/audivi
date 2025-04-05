@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- *
- *
  * @property int $id
  * @property string $title
  * @property int $position
@@ -19,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float|null $end
  * @property int $audio_book_id
  * @property-read \App\Models\AudioBook $audioBook
+ *
  * @method static \Database\Factories\TrackFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Track newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Track newQuery()
@@ -30,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Track wherePosition($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Track whereStart($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Track whereTitle($value)
+ *
  * @mixin \Eloquent
  */
 class Track extends Model
@@ -39,12 +39,15 @@ class Track extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'title',
         'position',
         'path',
         'start',
         'end',
-        'duration'
+        'duration',
+        'mTime',
+        'audio_book_id',
     ];
 
     public function audioBook(): BelongsTo

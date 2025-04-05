@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Library\LibraryService;
 use App\Scanners\ID3\ID3TagScanner;
 use App\Scanners\ID3\ParserService;
 use App\Scanners\Scanner;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,10 +22,11 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+
+            Model::shouldBeStrict();
         }
 
         $this->app->bind('id3.parser', static fn (Application $app) => $app->make(ParserService::class));
-        $this->app->bind('library.service', static fn (Application $app) => $app->make(LibraryService::class));
     }
 
     /**

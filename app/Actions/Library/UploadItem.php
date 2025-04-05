@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Library;
 
-use App\Library\Library;
+use App\Facades\Library;
 use Illuminate\Support\Facades\Storage;
 
 class UploadItem
@@ -13,7 +13,7 @@ class UploadItem
     {
         // TODO: organize in folders
         $parts = explode(';base64,', $chunk);
-        if (!\is_array($parts) || !isset($parts[1])) {
+        if (! \is_array($parts) || ! isset($parts[1])) {
             $decodedChunk = '';
         } else {
             $decodedChunk = base64_decode($parts[1]);
@@ -23,7 +23,7 @@ class UploadItem
             ? Storage::disk('library')->put($path, $decodedChunk)
             : Storage::disk('library')->append($path, $decodedChunk, '');
 
-        if (!$result) {
+        if (! $result) {
             return false;
         }
 
@@ -49,8 +49,9 @@ class UploadItem
         }
 
         $folder = Library::getFolderByFilename($folder);
-        $path = $folder . '/' . $filename;
+        $path = $folder.'/'.$filename;
         Storage::disk('library')->move($filename, $path);
+
         return $path;
     }
 }

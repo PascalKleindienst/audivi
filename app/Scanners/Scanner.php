@@ -6,15 +6,15 @@ namespace App\Scanners;
 
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
+use App\Data\Library\ScanResultData;
+use App\Events\CollectedScanPathsEvent;
+use App\Events\ScanProgressEvent;
 use App\Library\LibraryFactory;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
+use App\Models\AudioBook;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
-use Psr\Log\LoggerInterface;
-use RuntimeException;
-use SplFileInfo;
 use TypeError;
 
 final class Scanner
@@ -24,7 +24,7 @@ final class Scanner
      */
     private array $scanners = [];
 
-    public function __construct(private readonly LibraryFactory $library, private readonly LoggerInterface $logger)
+    public function __construct(private readonly LibraryFactory $library)
     {
     }
 
@@ -34,18 +34,21 @@ final class Scanner
     }
 
     /**
-     * @param string $path
      * @return ItemData[]
      */
-    public function getFolderContents(string $path): array
+    public function getFolderContents(?string $path = null): array
     {
-        $folder = Storage::disk('library')->fileExists($path) ? File::dirname($path) : $path;
-        $folders = Collection::make(Storage::disk('library')->files($folder, true))
-            ->map(static fn (string $file) => new SplFileInfo(Storage::disk('library')->path($file)))
-            ->groupBy(static fn (SplFileInfo $file) => $file->getPath());
+        $paths = collect(Storage::disk('library')->files($path, recursive: true))
+            ->filter(static fn (string $file) => ! str_starts_with($file, '.'))
+            ->filter(static fn (string $file) => (bool) preg_match('/\.(mp3|wav|ogg|m4a|flac|opus)$/i', $file))
+            ->mapToGroups(static fn (string $file) => [
+                File::dirname($file) => $file,
+            ]);
+
+        CollectedScanPathsEvent::dispatch($paths);
 
         $items = [];
-        foreach ($folders as $dirname => $files) {
+        foreach ($paths as $dirname => $files) {
             $items[] = $this->library->createLibraryItem($dirname, $files);
         }
 
@@ -55,10 +58,9 @@ final class Scanner
     /**
      * Scan Item / folder path, as one item can have many files / tracks
      *
-     * @return MetaData[]
      * @throws InvalidArgumentException if no files are found in path
      */
-    public function scanPath(string $path): array
+    public function scanPath(string $path, bool $force = false): void
     {
         $items = $this->getFolderContents($path);
 
@@ -66,20 +68,38 @@ final class Scanner
             throw new InvalidArgumentException('No files found in path: '.$path);
         }
 
-        return array_map(fn(ItemData $item) => $this->scanItem($item) ?? $item->meta, $items);
+        foreach ($items as $item) {
+            $meta = $this->scanItem($item, $force);
+
+            if ($meta) {
+                $this->library->saveLibraryItem([$meta]);
+            }
+        }
     }
 
-    public function scanItem(ItemData $item): ?MetaData
+    public function scanItem(ItemData $item, bool $force = false): ?MetaData
     {
         foreach ($this->scanners as $scanner) {
             try {
-                return $scanner->scanItem($item);
+                $scanner->setItem($item);
+
+                foreach ($item->files as $file) {
+                    if (! $force && ! $this->isItemNewOrChanged($item, $file)) {
+                        ScanProgressEvent::dispatch(ScanResultData::skipped($file));
+
+                        continue;
+                    }
+
+                    ScanProgressEvent::dispatch($scanner->scan($file));
+                }
+
+                return $scanner->prepareScanResult();
             } catch (TypeError) {
                 continue;
             }
         }
 
-        $this->logger->warning(
+        Log::warning(
             'Could not scan item with any of the registered library scanners',
             ['scanners' => $this->scanners]
         );
@@ -87,8 +107,27 @@ final class Scanner
         return null;
     }
 
-    public function scanLibrary(string $path): void
+    public function scanLibrary(bool $force = false): void
     {
-        throw new RuntimeException("Scan library path {$path}: Not implemented");
+        $items = $this->getFolderContents();
+
+        foreach ($items as $item) {
+            $meta = $this->scanItem($item, $force);
+
+            if ($meta) {
+                $this->library->saveLibraryItem([$meta]);
+            }
+        }
+    }
+
+    public function isItemNewOrChanged(ItemData $item, string $file): bool
+    {
+        return AudioBook::query()
+            ->where('path', $item->meta->path)
+            ->whereHas('tracks', static fn ($track) => $track
+                ->where('path', basename($file))
+                ->where('mTime', '=', Storage::disk('library')->lastModified($file))
+            )
+            ->first() === null;
     }
 }

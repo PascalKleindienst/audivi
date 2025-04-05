@@ -28,7 +28,7 @@ final class AuthorData extends Data
         return new self(
             id: $author->id,
             name: $author->name,
-            image: Lazy::create(static fn () => $author->image ?  Storage::disk('public')->url('authors/' . $author->image) : null),
+            image: Lazy::create(static fn () => $author->image ? Storage::disk('public')->url('authors/'.$author->image) : null),
             description: Lazy::create(static fn () => $author->description),
             link: Lazy::create(static fn () => $author->link),
             created_at: Lazy::create(static fn () => $author->created_at),
