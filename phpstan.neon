@@ -6,18 +6,10 @@ parameters:
         - app
         - routes
 
-    # Level 9 is the highest level
-    level: 6
+    level: 8
 
+    checkModelProperties: true
     inferPrivatePropertyTypeFromConstructor: true
     checkGenericClassInNonGenericObjectType: false
     databaseMigrationsPath:
         - database/migrations
-
-#    ignoreErrors:
-#        - '#PHPDoc tag @var#'
-#
-#    excludePaths:
-#        - ./*/*/FileToBeExcluded.php
-#
-#    checkMissingIterableValueType: false
