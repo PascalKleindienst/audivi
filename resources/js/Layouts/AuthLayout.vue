@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import ApplicationMark from '@/Components/ApplicationMark.vue';
 
 defineProps<{
     title?: string;
@@ -12,7 +12,7 @@ defineProps<{
         <div class="flex items-center justify-center py-12">
             <div class="mx-auto grid w-[65ch] gap-6 px-4">
                 <div class="grid gap-2 text-center">
-                    <AuthenticationCardLogo class="mx-auto" />
+                    <ApplicationMark class="mx-auto size-16" />
                     <h1 class="text-3xl font-bold">{{ title }}</h1>
                     <p class="text-balance text-muted-foreground">
                         {{ description }}
