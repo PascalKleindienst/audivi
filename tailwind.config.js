@@ -1,8 +1,7 @@
-const animate = require('tailwindcss-animate');
-const defaultTheme = require('tailwindcss/defaultTheme');
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
     darkMode: ['class'],
     safelist: ['dark'],
     prefix: '',
@@ -11,7 +10,7 @@ module.exports = {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
-        './resources/js/**/*.{ts,tsx,vue}'
+        './resources/js/**/*.{js,jsx,ts,tsx,vue}'
     ],
 
     theme: {
@@ -23,6 +22,9 @@ module.exports = {
             }
         },
         extend: {
+            fontFamily: {
+                serif: ['Garamond', ...defaultTheme.fontFamily.serif]
+            },
             colors: {
                 border: 'hsl(var(--border))',
                 input: 'hsl(var(--input))',
@@ -86,9 +88,6 @@ module.exports = {
                     to: { height: 0 }
                 }
             },
-            fontFamily: {
-                serif: ['Garamond', ...defaultTheme.fontFamily.serif]
-            },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out',
@@ -97,5 +96,5 @@ module.exports = {
             }
         }
     },
-    plugins: [animate]
+    plugins: [import('tailwindcss-animate')]
 };

@@ -1,4 +1,9 @@
 import { PageProps } from '@inertiajs/core';
+import type { Config } from 'ziggy-js';
+
+export interface Auth {
+    user: User;
+}
 
 export interface User {
     name: string;
@@ -34,12 +39,16 @@ export interface PaginatedDataCollection<T> {
 }
 
 export interface SharedProps extends PageProps {
-    auth: {
-        user: User;
-    };
+    auth: Auth;
+    ziggy: Config & { location: string };
+    sidebarOpen: boolean;
     canResetPassword: boolean;
     errorBags: unknown;
     jetstream: {
+        flash?: {
+            banner?: string;
+            bannerStyle?: string;
+        };
         canCreateTeams: boolean;
         canManageTwoFactorAuthentication: boolean;
         canUpdatePassword: boolean;
