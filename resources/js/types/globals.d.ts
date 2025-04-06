@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { trans } from 'laravel-vue-i18n';
 // import { Config as ZiggyConfig } from 'ziggy-js';
 
 declare global {
@@ -8,4 +9,6 @@ declare global {
 
     // const Ziggy: ZiggyConfig;
     const route: typeof routeFn;
+
+    const $t: typeof trans;
 }

@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
-import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { Button } from '@/Components/ui/button';
-import { Label } from '@/Components/ui/label';
 import { Input } from '@/Components/ui/input';
-import { trans } from 'laravel-vue-i18n';
+import { Label } from '@/Components/ui/label';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
+import { Head, useForm } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 
 defineProps<{
     status: string;
 }>();
-
-defineOptions({ layout: AuthLayout });
 
 const form = useForm({
     email: ''
@@ -25,40 +21,34 @@ const submit = () => {
 </script>
 
 <template>
-    <Head :title="trans('auth.forgot_password')" />
+    <Head :title="$t('Forgot your password?')" />
+    <AuthLayout
+        :title="$t('Forgot your password?')"
+        :description="
+            $t(
+                'Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.'
+            )
+        "
+    >
+        <form @submit.prevent="submit">
+            <div class="grid gap-4">
+                <!-- TODO: Component?-->
+                <div v-if="status" class="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
+                    {{ status }}
+                </div>
 
-    <AuthenticationCardLogo class="mx-auto" />
-
-    <p class="text-balance text-center text-muted-foreground">
-        {{ trans('auth.forgot_password_subtitle') }}
-    </p>
-
-    <form @submit.prevent="submit">
-        <div class="grid gap-4">
-            <!-- TODO: Component?-->
-            <div v-if="status" class="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
-                {{ status }}
+                <div class="grid gap-2">
+                    <Label for="email">{{ $t('Email') }}</Label>
+                    <Input id="email" v-model="form.email" type="email" placeholder="m@example.com" required autofocus autocomplete="username" />
+                    <InputError :message="form.errors.email" />
+                </div>
             </div>
 
-            <div class="grid gap-2">
-                <Label for="email">{{ trans('auth.email') }}</Label>
-                <Input
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError :message="form.errors.email" />
+            <div class="mt-4 flex items-center justify-end">
+                <Button type="submit" class="w-full" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    {{ $t('Reset Password Notification') }}
+                </Button>
             </div>
-        </div>
-
-        <div class="mt-4 flex items-center justify-end">
-            <Button type="submit" class="w-full" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                {{ trans('auth.password_reset_link') }}
-            </Button>
-        </div>
-    </form>
+        </form>
+    </AuthLayout>
 </template>

@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { route } from 'ziggy-js';
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
+import { Head, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const form = useForm({
     password: ''
@@ -27,21 +25,16 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Secure Area" />
+    <Head :title="$t('Confirm Password')" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            This is a secure area of the application. Please confirm your password before continuing.
-        </div>
-
+    <AuthLayout
+        :title="$t('Confirm Password')"
+        :description="$t('This is a secure area of the application. Please confirm your password before continuing.')"
+    >
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="password" value="Password" />
-                <TextInput
+                <Label for="password">{{ $t('Password') }}</Label>
+                <Input
                     id="password"
                     ref="passwordInput"
                     v-model="form.password"
@@ -55,10 +48,10 @@ const submit = () => {
             </div>
 
             <div class="mt-4 flex justify-end">
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Confirm
-                </PrimaryButton>
+                <Button class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    {{ $t('Confirm') }}
+                </Button>
             </div>
         </form>
-    </AuthenticationCard>
+    </AuthLayout>
 </template>

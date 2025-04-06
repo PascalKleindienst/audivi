@@ -1,12 +1,15 @@
-<script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import Checkbox from '@/Components/Checkbox.vue';
+<script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import { Button } from '@/Components/ui/button';
+import { Checkbox } from '@/Components/ui/checkbox';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
+import type { SharedProps } from '@/types/inertia';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+const pageProps = computed(() => usePage<SharedProps>().props);
 
 const form = useForm({
     name: '',
@@ -24,105 +27,72 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head :title="$t('Create Account')" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
-                <TextInput
-                    id="name"
-                    v-model="form.name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-                <InputError class="mt-2" :message="form.errors.name" />
+    <AuthLayout :title="$t('Create Account')">
+        <form class="space-y-4" @submit.prevent="submit">
+            <div class="grid gap-2">
+                <Label for="name">{{ $t('Name') }}</Label>
+                <Input id="name" v-model="form.name" type="text" required autofocus autocomplete="name" />
+                <InputError :message="form.errors.name" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
+            <div class="grid gap-2">
+                <Label for="email">{{ $t('Email') }}</Label>
+                <Input id="email" v-model="form.email" type="email" required autocomplete="username" />
+                <InputError :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
+            <div class="grid gap-2">
+                <Label for="password">{{ $t('Password') }}</Label>
+                <Input id="password" v-model="form.password" type="password" required autocomplete="new-password" />
+                <InputError :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+            <div class="grid gap-2">
+                <Label for="password_confirmation"> {{ $t('Confirm Password') }}</Label>
+                <Input id="password_confirmation" v-model="form.password_confirmation" type="password" required autocomplete="new-password" />
+                <InputError :message="form.errors.password_confirmation" />
             </div>
 
-            <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature" class="mt-4">
-                <InputLabel for="terms">
+            <div v-if="pageProps.jetstream.hasTermsAndPrivacyPolicyFeature" class="mt-4">
+                <Label for="terms">
                     <div class="flex items-center">
                         <Checkbox id="terms" v-model:checked="form.terms" name="terms" required />
 
                         <div class="ms-2">
-                            I agree to the
+                            {{ $t('auth.register.agree') }}
                             <a
                                 target="_blank"
                                 :href="route('terms.show')"
                                 class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
-                                >Terms of Service</a
+                                >{{ $t('auth.register.terms') }}</a
                             >
-                            and
+                            {{ $t('general.and') }}
                             <a
                                 target="_blank"
                                 :href="route('policy.show')"
                                 class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
-                                >Privacy Policy</a
+                                >{{ $t('auth.register.privacy') }}</a
                             >
                         </div>
                     </div>
-                    <InputError class="mt-2" :message="form.errors.terms" />
-                </InputLabel>
+                    <InputError :message="form.errors.terms" />
+                </Label>
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
+            <div class="mt-4 flex items-center justify-between">
                 <Link
                     :href="route('login')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
                 >
-                    Already registered?
+                    {{ $t('Already registered?') }}
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
-                </PrimaryButton>
+                <Button class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    {{ $t('Register') }}
+                </Button>
             </div>
         </form>
-    </AuthenticationCard>
+    </AuthLayout>
 </template>
