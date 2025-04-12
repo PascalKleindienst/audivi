@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
         :data-highlighted="isFocused ? '' : undefined"
         :class="
             cn(
-                'space-y-2 transition hover:scale-110 hover:ring-2 hover:ring-ring focus:scale-110 focus:ring-2 focus:ring-ring focus-visible:outline-none',
+                'space-y-2 transition hover:scale-110 hover:ring-2 hover:ring-ring focus:scale-110 focus:ring-2 focus:ring-ring focus-visible:outline-hidden',
                 props.class
             )
         "
