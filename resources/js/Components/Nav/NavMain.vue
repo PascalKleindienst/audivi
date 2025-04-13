@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/Components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
 import type { SharedProps } from '@/types/inertia';
+import { Link, usePage } from '@inertiajs/vue3';
 
 defineProps<{
     items: NavItem[];
@@ -16,10 +16,7 @@ const page = usePage<SharedProps>();
         <SidebarGroupLabel>Platform</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton
-                    as-child :is-active="item.href === page.url"
-                    :tooltip="$t(item.title)"
-                >
+                <SidebarMenuButton as-child :is-active="item.href === page.url || item.href.includes(page.url)" :tooltip="$t(item.title)">
                     <Link :href="item.href">
                         <component :is="item.icon" />
                         <span>{{ $t(item.title) }}</span>

@@ -38,7 +38,7 @@ const initials = computed(
 
 <template>
     <header
-        class="border-sidebar-border/70 flex h-16 shrink-0 items-center gap-8 border-b px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
+        class="border-sidebar-border bg-sidebar flex h-16 shrink-0 items-center gap-8 border-b px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
     >
         <div class="flex items-center gap-2">
             <SidebarTrigger class="-ml-1" />
@@ -52,11 +52,11 @@ const initials = computed(
                 <label for="icon" class="sr-only">{{ $t('general.search') }}</label>
                 <div class="relative w-full max-w-sm items-center">
                     <kbd
-                        class="text-muted-foreground border-muted absolute inset-y-0 end-0 m-2 flex hidden items-center justify-center border-1 px-2 font-mono text-xs not-[.os-macos_&]:block"
+                        class="text-muted-foreground border-border absolute inset-y-0 end-0 m-2 flex hidden items-center justify-center border-1 px-2 font-mono text-xs not-[.os-macos_&]:block"
                         >Strg+K</kbd
                     >
                     <kbd
-                        class="text-muted-foreground border-muted absolute inset-y-0 end-0 m-2 flex hidden items-center justify-center border-1 px-2 font-mono text-xs [.os-macos_&]:block"
+                        class="text-muted-foreground border-border absolute inset-y-0 end-0 m-2 flex hidden items-center justify-center border-1 px-2 font-mono text-xs [.os-macos_&]:block"
                         >⌘+K</kbd
                     >
                     <Input id="search" type="text" :placeholder="$t('general.search')" class="pr-12 pl-10" />

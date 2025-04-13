@@ -29,7 +29,7 @@ useEventListener<'keydown'>(document, 'keydown', (e: KeyboardEvent) => {
 <template>
     <div
         ref="grid"
-        :class="cn('grid gap-12 [grid-template-columns:repeat(auto-fill,_minmax(250px,_1fr))]', props.class)"
+        :class="cn('grid gap-6 [grid-template-columns:repeat(auto-fill,_minmax(250px,_1fr))]', props.class)"
     >
         <slot />
     </div>

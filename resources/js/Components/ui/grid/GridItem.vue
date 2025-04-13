@@ -4,6 +4,7 @@ import { Primitive, type PrimitiveProps } from 'radix-vue';
 import { cn } from '@/Utils';
 
 const isFocused = ref(false);
+
 interface Props extends PrimitiveProps {
     class?: HTMLAttributes['class'];
 }
@@ -22,7 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
         :data-highlighted="isFocused ? '' : undefined"
         :class="
             cn(
-                'space-y-2 transition hover:scale-110 hover:ring-2 hover:ring-ring focus:scale-110 focus:ring-2 focus:ring-ring focus-visible:outline-hidden',
+                'space-y-2 transition bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm p-4 hover:scale-105 hover:ring-2 hover:ring-ring focus:scale-105 focus:ring-2 focus:ring-ring focus-visible:outline-hidden',
                 props.class
             )
         "
