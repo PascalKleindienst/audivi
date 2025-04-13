@@ -1,50 +1,96 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { PaginatedDataCollection } from '@/types/inertia';
-import AuthorData = App.Data.AuthorData;
-import PageHeader from '@/Components/PageHeader.vue';
-import { Grid, GridItem } from '@/Components/ui/grid';
 import Pagination from '@/Components/Pagination.vue';
+import { Button } from '@/Components/ui/button';
+import { Grid, GridItem } from '@/Components/ui/grid';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import type { BreadcrumbItem } from '@/types';
+import { PaginatedDataCollection } from '@/types/inertia';
+import { Head, Link } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
+import { LayoutGridIcon, ListIcon } from 'lucide-vue-next';
+import { ref } from 'vue';
+import AuthorData = App.Data.AuthorData;
 
 const props = defineProps<{
     authors: PaginatedDataCollection<AuthorData>;
 }>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: trans('navigation.authors'),
+        href: route('authors.index')
+    }
+];
+
+const layout = ref('grid');
 </script>
 
 <template>
     <Head :title="trans('author.title')" />
 
-    <PageHeader>
-        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-            {{ trans('author.title') }}
-        </h2>
-    </PageHeader>
-
-    <Grid>
-        <GridItem v-for="author in props.authors.data" :key="author.id" as-child>
-            <Link
-                :href="route('authors.show', author.id)"
-                @keydown.space.prevent="() => $inertia.visit(route('authors.show', author.id))"
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="p-4">
+            <Button
+                size="icon"
+                :variant="layout === 'list' ? 'default' : 'secondary'"
+                class="rounded-tr-none rounded-br-none"
+                @click="layout = 'list'"
             >
-                <div class="space-y-2">
-                    <img
-                        v-if="author.image"
-                        :src="author.image"
-                        :alt="author.name"
-                        class="w-full rounded-xl object-cover shadow-xl [aspect-ratio:1/1]"
-                    />
-                    <div
-                        v-else
-                        class="flex items-center justify-center rounded-xl bg-accent text-center font-serif text-xl font-bold shadow-xl [aspect-ratio:1/1]"
-                    >
-                        {{ author.name }}
-                    </div>
-                    <h3 class="font-serif text-xl font-bold">{{ author.name }}</h3>
-                </div>
-            </Link>
-        </GridItem>
-    </Grid>
+                <ListIcon />
+            </Button>
+            <Button
+                size="icon"
+                :variant="layout === 'grid' ? 'default' : 'secondary'"
+                class="rounded-tl-none rounded-bl-none"
+                @click="layout = 'grid'"
+            >
+                <LayoutGridIcon />
+            </Button>
+        </div>
 
-    <Pagination :paginator="authors" :only="['authors']" />
+        <Grid v-if="layout === 'grid'" data-testid="author-grid" class="p-4">
+            <GridItem v-for="author in props.authors.data" :key="author.id" as-child>
+                <Link :href="route('authors.show', author.id)" @keydown.space.prevent="() => $inertia.visit(route('authors.show', author.id))">
+                    <div class="space-y-4">
+                        <img
+                            v-if="author.image"
+                            :src="author.image"
+                            :alt="author.name"
+                            class="[aspect-ratio:1/1] w-full rounded-xl object-cover shadow-xl"
+                        />
+                        <div
+                            v-else
+                            class="bg-muted-foreground text-muted flex [aspect-ratio:1/1] items-center justify-center rounded-xl text-center font-serif text-xl font-bold shadow-xl"
+                        >
+                            {{ author.name }}
+                        </div>
+                        <h3 class="font-serif text-xl [line-height:1] font-bold">{{ author.name }}</h3>
+                    </div>
+                </Link>
+            </GridItem>
+        </Grid>
+        <Grid v-else class="[grid-template-columns:repeat(auto-fill,_minmax(360px,_1fr))] p-4" data-testid="author-grid">
+            <GridItem v-for="author in props.authors.data" :key="author.id" as-child>
+                <Link :href="route('authors.show', author.id)" @keydown.space.prevent="() => $inertia.visit(route('authors.show', author.id))">
+                    <div class="flex gap-4 space-y-4">
+                        <img
+                            v-if="author.image"
+                            :src="author.image"
+                            :alt="author.name"
+                            class="[aspect-ratio:1/1] w-25 rounded-xl object-cover shadow-xl"
+                        />
+                        <div
+                            v-else
+                            class="bg-muted-foreground text-muted flex [aspect-ratio:1/1] w-25 items-center justify-center rounded-xl p-2 text-center font-serif text-sm"
+                        >
+                            {{ author.name }}
+                        </div>
+                        <h3 class="font-serif text-xl/8 font-bold">{{ author.name }}</h3>
+                    </div>
+                </Link>
+            </GridItem>
+        </Grid>
+
+        <Pagination :paginator="authors" :only="['authors']" data-testid="author-pagination" />
+    </AppLayout>
 </template>

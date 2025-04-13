@@ -1,104 +1,95 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthorData = App.Data.AuthorData;
-import PageHeader from '@/Components/PageHeader.vue';
-import { route } from 'ziggy-js';
-import { Label } from '@/Components/ui/label';
-import { Input } from '@/Components/ui/input';
-import { trans } from 'laravel-vue-i18n';
-import { Textarea } from '@/Components/ui/textarea';
-import { Button } from '@/Components/ui/button';
 import InputError from '@/Components/InputError.vue';
-import { ref } from 'vue';
-import { usePhoto } from '@/Composables/photo';
+import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardFooter } from '@/Components/ui/card';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
+import { Textarea } from '@/Components/ui/textarea';
+import { useAuthor } from '@/Composables/useAuthor';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import type { BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
+import { useTemplateRef } from 'vue';
+import AuthorData = App.Data.AuthorData;
 
-const props = defineProps<{
+const { author } = defineProps<{
     author: AuthorData;
 }>();
 
-const form = useForm({
-    _method: 'PUT',
-    name: props.author.name,
-    link: props.author.link,
-    description: props.author.description,
-    image: null as File | null
-});
+const imageRef = useTemplateRef('imageInput');
+const { form, submit, imagePreview, updatePreview, selectNewPhoto } = useAuthor(imageRef, author);
 
-const imagePreview = ref<string | ArrayBuffer | null>(null);
-const imageInput = ref<HTMLInputElement | null>(null);
-const { updatePreview, selectNewPhoto, clearFileInput } = usePhoto(imageInput, imagePreview);
-
-const submit = () => {
-    const files = imageInput.value?.files;
-    if (files && files.length) {
-        form.image = files[0] ?? null;
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: trans('navigation.authors'),
+        href: route('authors.index')
+    },
+    {
+        title: author.name,
+        href: route('authors.show', author.id)
+    },
+    {
+        title: trans('general.edit')
     }
-
-    form.post(route('authors.update', props.author.id), {
-        preserveScroll: true,
-        onSuccess: () => clearFileInput()
-    });
-};
+];
 </script>
 
 <template>
-    <Head :title="props.author.name" />
+    <Head :title="author.name" />
 
-    <div class="mx-auto max-w-screen-xl px-3 py-2 sm:px-6 lg:px-8">
-        <PageHeader :title="props.author.name" :description="props.author.description" />
-        <form class="grid grid-cols-12 gap-6" @submit.prevent="submit">
-            <div class="col-span-12 grid place-items-center md:col-span-4">
-                <input id="image" ref="imageInput" type="file" class="hidden" @change="updatePreview" />
-                <Label for="image">{{ trans('author.image') }}</Label>
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <form class="mx-auto w-full max-w-6xl p-4" @submit.prevent="submit">
+            <Card>
+                <CardContent class="grid grid-cols-12 gap-6">
+                    <div class="col-span-12 grid place-items-center md:col-span-4">
+                        <input id="image" ref="imageInput" type="file" class="hidden" @change="updatePreview" />
+                        <Label for="image">{{ trans('author.image') }}</Label>
 
-                <div v-show="!imagePreview" class="mt-2">
-                    <img
-                        :src="props.author.image"
-                        :alt="props.author.name"
-                        class="size-40 rounded-full object-cover text-center"
-                    />
-                </div>
+                        <div v-show="!imagePreview" class="mt-2">
+                            <img :src="author.image" :alt="author.name" class="size-40 rounded-full object-cover text-center" />
+                        </div>
 
-                <div v-show="imagePreview" class="mt-2">
-                    <span
-                        class="block size-40 rounded-full bg-cover bg-center bg-no-repeat"
-                        :style="'background-image: url(\'' + imagePreview + '\');'"
-                    />
-                </div>
+                        <div v-show="imagePreview" class="mt-2">
+                            <span
+                                class="block size-40 rounded-full bg-cover bg-center bg-no-repeat"
+                                :style="'background-image: url(\'' + imagePreview + '\');'"
+                            />
+                        </div>
 
-                <Button variant="secondary" class="me-2 mt-2" type="button" @click.prevent="selectNewPhoto">
-                    {{ trans('author.image.select') }}
-                </Button>
+                        <Button variant="secondary" class="me-2 mt-2" type="button" @click.prevent="selectNewPhoto">
+                            {{ trans('author.image.select') }}
+                        </Button>
 
-                <InputError :message="form.errors.image" class="mt-2" />
-            </div>
-            <div class="col-span-12 space-y-6 md:col-span-8">
-                <div class="grid gap-2">
-                    <Label for="name">{{ trans('author.name') }}</Label>
-                    <Input id="name" v-model="form.name" type="text" name="name" />
-                    <InputError :message="form.errors.name" class="mt-2" />
-                </div>
+                        <InputError :message="form.errors.image" class="mt-2" />
+                    </div>
+                    <div class="col-span-12 space-y-6 md:col-span-8">
+                        <div class="grid gap-2">
+                            <Label for="name">{{ trans('author.name') }}</Label>
+                            <Input id="name" v-model="form.name" type="text" name="name" />
+                            <InputError :message="form.errors.name" class="mt-2" />
+                        </div>
 
-                <div class="grid gap-2">
-                    <Label for="description">{{ trans('author.description') }}</Label>
-                    <Textarea id="description" v-model="form.description" name="description" />
-                    <InputError :message="form.errors.description" class="mt-2" />
-                </div>
+                        <div class="grid gap-2">
+                            <Label for="description">{{ trans('author.description') }}</Label>
+                            <Textarea id="description" v-model="form.description" name="description" />
+                            <InputError :message="form.errors.description" class="mt-2" />
+                        </div>
 
-                <div class="grid gap-2">
-                    <Label for="link">{{ trans('author.link') }}</Label>
-                    <Input id="link" v-model="form.link" type="text" name="link" />
-                    <InputError :message="form.errors.link" class="mt-2" />
-                </div>
-            </div>
-
-            <footer class="col-span-12 space-x-2">
-                <Button variant="default" type="submit">{{ trans('general.save') }}</Button>
-
-                <Link :href="route('authors.show', author.id)" as-child>
-                    <Button variant="secondary">{{ trans('general.cancel') }}</Button>
-                </Link>
-            </footer>
+                        <div class="grid gap-2">
+                            <Label for="link">{{ trans('author.link') }}</Label>
+                            <Input id="link" v-model="form.link" type="text" name="link" />
+                            <InputError :message="form.errors.link" class="mt-2" />
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter class="flex justify-between">
+                    <Button variant="default" type="submit">{{ trans('general.save') }}</Button>
+                    <Button :as="Link" variant="secondary" :href="route('authors.show', author.id)">
+                        {{ trans('general.cancel') }}
+                    </Button>
+                </CardFooter>
+            </Card>
         </form>
-    </div>
+    </AppLayout>
 </template>
