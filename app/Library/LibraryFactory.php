@@ -18,8 +18,7 @@ final class LibraryFactory
 {
     public function __construct(
         private readonly SaveAudioBook $saveAudioBook
-    ) {
-    }
+    ) {}
 
     /**
      * @param  MetaData[]  $items
@@ -54,12 +53,6 @@ final class LibraryFactory
                 $meta['title'] = $series['title'];
                 $meta['volume'] = $series['volume'];
             }
-
-            $volume = Library::matchByVolume($meta['title']);
-            if ($volume) {
-                $meta['title'] = $volume['title'];
-                $meta['volume'] = $volume['volume'];
-            }
         }
 
         if (\count($splitDir) > 0) {
@@ -78,6 +71,12 @@ final class LibraryFactory
         if ($subtitleMatch) {
             $meta['title'] = $subtitleMatch['title'];
             $meta['subtitle'] = $subtitleMatch['subtitle'];
+        }
+
+        $volume = Library::matchByVolume($meta['title']);
+        if ($volume) {
+            $meta['title'] = $volume['title'];
+            $meta['volume'] = $volume['volume'];
         }
 
         return ItemData::from(['folder' => $folder, 'files' => $files, 'meta' => $meta]);

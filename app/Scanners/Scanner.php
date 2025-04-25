@@ -24,9 +24,7 @@ final class Scanner
      */
     private array $scanners = [];
 
-    public function __construct(private readonly LibraryFactory $library)
-    {
-    }
+    public function __construct(private readonly LibraryFactory $library) {}
 
     public function addScanner(FileScannerInterface $scanner): void
     {
@@ -40,7 +38,7 @@ final class Scanner
     {
         $paths = collect(Storage::disk('library')->files($path, recursive: true))
             ->filter(static fn (string $file) => ! str_starts_with($file, '.'))
-            ->filter(static fn (string $file) => (bool) preg_match('/\.(mp3|wav|ogg|m4a|flac|opus)$/i', $file))
+            ->filter(static fn (string $file) => (bool) preg_match('/\.(mp3|wav|ogg|m4a|m4b|flac|opus)$/i', $file))
             ->mapToGroups(static fn (string $file) => [
                 File::dirname($file) => $file,
             ]);
@@ -60,7 +58,7 @@ final class Scanner
      *
      * @throws InvalidArgumentException if no files are found in path
      */
-    public function scanPath(string $path, bool $force = false): void
+    public function scanPath(string $path, bool $force = false, bool $dryRun = false): void
     {
         $items = $this->getFolderContents($path);
 
@@ -71,7 +69,11 @@ final class Scanner
         foreach ($items as $item) {
             $meta = $this->scanItem($item, $force);
 
-            if ($meta) {
+            if (! $meta) {
+                continue;
+            }
+
+            if (! $dryRun) {
                 $this->library->saveLibraryItem([$meta]);
             }
         }
@@ -107,14 +109,19 @@ final class Scanner
         return null;
     }
 
-    public function scanLibrary(bool $force = false): void
+    public function scanLibrary(bool $force = false, bool $dryRun = false): void
     {
         $items = $this->getFolderContents();
 
         foreach ($items as $item) {
             $meta = $this->scanItem($item, $force);
 
-            if ($meta) {
+            if (! $meta) {
+
+                continue;
+            }
+
+            if (! $dryRun) {
                 $this->library->saveLibraryItem([$meta]);
             }
         }

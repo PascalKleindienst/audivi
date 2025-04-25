@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\Library;
 
-use App\Data\ID3\TrackData;
+use App\Data\TrackData;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
 
@@ -27,8 +27,7 @@ final class MetaData extends Data implements \Stringable
         public readonly array $authors = [],
         /** @var TrackData[] */
         public readonly array $tracks = []
-    ) {
-    }
+    ) {}
 
     public function __toString(): string
     {
