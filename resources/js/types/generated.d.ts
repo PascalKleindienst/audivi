@@ -1,5 +1,7 @@
 declare namespace App.Data {
     export type AudioBookData = {
+        duration: number | null;
+        fileSize: number | null;
         id: number | null;
         title: string;
         path: string;
@@ -26,6 +28,26 @@ declare namespace App.Data {
         created_at?: string | null;
         updated_at?: string | null;
     };
+    export type BreadcrumbItemData = {
+        title: string;
+        url: string | null;
+    };
+    export type PlaylistData = {
+        bookId: number;
+        title: string;
+        cover: string | null;
+        tracks: Array<App.Data.PlaylistTrackData>;
+    };
+    export type PlaylistTrackData = {
+        id: number;
+        title: string;
+        position: number;
+        start: number;
+        end: number;
+        duration: number;
+        currentTime: number;
+    };
+
     export type PublisherData = {
         id: number | null;
         name: string;
@@ -45,40 +67,11 @@ declare namespace App.Data {
         path: string | null;
         start: number | null;
         end: number | null;
+        duration: number | null;
+        mTime: number;
     };
 }
 declare namespace App.Data.ID3 {
-    export type FrameData = {
-        id: string;
-        type: any;
-        value: any | App.Data.ID3.Genre | string | null;
-    };
-    export type ImageValueData = {
-        type: App.Data.ID3.ImageType;
-        mime: string;
-        description: string | null;
-        data: string;
-    };
-    export type TagData = {
-        kind: string | null;
-        title: string | null;
-        album: string | null;
-        artist: string | null;
-        year: number | null;
-        version: number | Array<number> | null;
-        comments: string | null;
-        track: string | null;
-        genre: App.Data.ID3.Genre | null;
-        publisher: string | null;
-        language: string | null;
-        frames: Array<App.Data.ID3.FrameData>;
-        images: Array<App.Data.ID3.ImageValueData>;
-    };
-    export type TrackData = {
-        title: string;
-        position: number;
-        path: string | null;
-    };
     export type Genre =
         | 0
         | 1
@@ -272,40 +265,46 @@ declare namespace App.Data.ID3 {
         | 189
         | 190
         | 191;
-    export type ImageType =
-        | 0
-        | 1
-        | 2
-        | 3
-        | 4
-        | 5
-        | 6
-        | 7
-        | 8
-        | 9
-        | 10
-        | 11
-        | 12
-        | 13
-        | 14
-        | 15
-        | 16
-        | 17
-        | 18
-        | 19
-        | 20;
+    export type ImageType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20;
+    export type FrameData = {
+        id: string;
+        type: any;
+        value: any | App.Data.ID3.Genre | string | null;
+    };
+    export type ImageValueData = {
+        type: App.Data.ID3.ImageType;
+        mime: string;
+        description: string | null;
+        data: string;
+    };
+    export type TagData = {
+        kind: string | null;
+        title: string | null;
+        album: string | null;
+        artist: string | null;
+        year: number | null;
+        version: any | null;
+        comments: string | null;
+        track: string | null;
+        genre: App.Data.ID3.Genre | null;
+        publisher: string | null;
+        language: string | null;
+        frames: Array<App.Data.ID3.FrameData>;
+        images: Array<App.Data.ID3.ImageValueData>;
+    };
+    export type TrackData = {
+        title: string;
+        position: number;
+        path: string | null;
+        duration: number | null;
+        mTime: number;
+    };
 }
 declare namespace App.Data.Library {
-    export type FileData = {
-        name: string;
-        size: number;
-        extension: string;
-    };
     export type ItemData = {
-        mediaFiles: Array<App.Data.Library.FileData>;
         size: number | null;
         folder: string;
-        files: Array<App.Data.Library.FileData>;
+        files: Array<string>;
         meta: App.Data.Library.MetaData;
     };
     export type MetaData = {
@@ -319,7 +318,14 @@ declare namespace App.Data.Library {
         cover: string | null;
         language: string | null;
         path: string;
+        duration: number | null;
         authors: Array<string>;
-        tracks: Array<App.Data.ID3.TrackData>;
+        tracks: Array<App.Data.TrackData>;
+    };
+    export type ScanResultType = 'success' | 'skipped' | 'error';
+    export type ScanResultData = {
+        path: string;
+        result: App.Data.Library.ScanResultType;
+        error: string | null;
     };
 }
