@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\AudioBooksController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\PlaylistController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,11 +32,10 @@ Route::middleware([
 
     Route::resource('authors', AuthorController::class)->except(['create', 'destroy', 'store']);
 
+    Route::post('/playlist/update', [PlaylistController::class, 'update'])->name('playlist.update');
+    Route::get('/playlist/play/{track}', [PlaylistController::class, 'play'])->name('playlist.play');
+
     Route::get('/audio-books/{book}', [AudioBooksController::class, 'show'])->name('audio-books.show');
     Route::get('/audio-books', [AudioBooksController::class, 'index'])->name('audio-books');
     Route::post('/audio-books', [AudioBooksController::class, 'store'])->name('audio-books.store');
-});
-
-Route::get('/demo', static function () {
-    return view('demo');
 });
