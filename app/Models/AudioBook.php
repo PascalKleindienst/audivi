@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use Database\Factories\AudioBookFactory;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,41 +27,46 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $cover
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Author> $authors
+ * @property-read Collection<int, Author> $authors
  * @property-read int|null $authors_count
  *
- * @method static \Database\Factories\AudioBookFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook query()
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereCover($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook wherePublishedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereRating($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereSubtitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereVolume($value)
+ * @method static AudioBookFactory factory($count = null, $state = [])
+ * @method static Builder|AudioBook newModelQuery()
+ * @method static Builder|AudioBook newQuery()
+ * @method static Builder|AudioBook query()
+ * @method static Builder|AudioBook whereCover($value)
+ * @method static Builder|AudioBook whereCreatedAt($value)
+ * @method static Builder|AudioBook whereDescription($value)
+ * @method static Builder|AudioBook whereId($value)
+ * @method static Builder|AudioBook wherePath($value)
+ * @method static Builder|AudioBook wherePublishedAt($value)
+ * @method static Builder|AudioBook whereRating($value)
+ * @method static Builder|AudioBook whereSubtitle($value)
+ * @method static Builder|AudioBook whereTitle($value)
+ * @method static Builder|AudioBook whereUpdatedAt($value)
+ * @method static Builder|AudioBook whereVolume($value)
  *
  * @property string|null $language
  * @property int|null $publisher_id
  * @property int|null $series_id
- * @property-read \App\Models\Publisher|null $publisher
- * @property-read \App\Models\Series|null $series
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Track> $tracks
+ * @property-read Publisher|null $publisher
+ * @property-read Series|null $series
+ * @property-read Collection<int, Track> $tracks
  * @property-read int|null $tracks_count
  *
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereLanguage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook wherePublisherId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AudioBook whereSeriesId($value)
+ * @method static Builder|AudioBook whereLanguage($value)
+ * @method static Builder|AudioBook wherePublisherId($value)
+ * @method static Builder|AudioBook whereSeriesId($value)
  *
- * @mixin \Eloquent
+ * @property int|null $duration
+ *
+ * @method static Builder<static>|AudioBook whereDuration($value)
+ *
+ * @mixin Eloquent
  */
-class AudioBook extends Model
+final class AudioBook extends Model
 {
+    /** @use HasFactory<AudioBookFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -73,21 +82,33 @@ class AudioBook extends Model
         'published_at',
     ];
 
+    /**
+     * @return BelongsToMany<Author, $this>
+     */
     public function authors(): BelongsToMany
     {
         return $this->belongsToMany(Author::class);
     }
 
+    /**
+     * @return BelongsTo<Publisher, $this>
+     */
     public function publisher(): BelongsTo
     {
         return $this->belongsTo(Publisher::class);
     }
 
+    /**
+     * @return BelongsTo<Series, $this>
+     */
     public function series(): BelongsTo
     {
         return $this->belongsTo(Series::class);
     }
 
+    /**
+     * @return HasMany<Track, $this>
+     */
     public function tracks(): HasMany
     {
         return $this->hasMany(Track::class)->orderBy('position');
@@ -98,10 +119,12 @@ class AudioBook extends Model
      */
     protected function casts(): array
     {
+        $format = 'datetime:'.config('data.date_format');
+
         return [
-            'published_at' => 'datetime:'.config('data.date_format'),
-            'created_at' => 'datetime:'.config('data.date_format'),
-            'updated_at' => 'datetime:'.config('data.date_format'),
+            'published_at' => $format,
+            'created_at' => $format,
+            'updated_at' => $format,
         ];
     }
 }
