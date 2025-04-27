@@ -13,16 +13,16 @@ import {
 } from '@/Components/ui/dropdown-menu';
 import { Input } from '@/Components/ui/input';
 import { SidebarTrigger } from '@/Components/ui/sidebar';
-import type { BreadcrumbItemType } from '@/types';
 import type { SharedProps } from '@/types/inertia';
 import { Icon } from '@iconify/vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { useColorMode } from '@vueuse/core';
 import { Search } from 'lucide-vue-next';
 import { computed } from 'vue';
+import BreadcrumbItemData = App.Data.BreadcrumbItemData;
 
 defineProps<{
-    breadcrumbs?: BreadcrumbItemType[];
+    breadcrumbs?: BreadcrumbItemData[];
 }>();
 
 const mode = useColorMode();
@@ -42,7 +42,7 @@ const initials = computed(
     >
         <div class="flex items-center gap-2">
             <SidebarTrigger class="-ml-1" />
-            <template v-if="breadcrumbs.length > 0">
+            <template v-if="breadcrumbs">
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </template>
         </div>

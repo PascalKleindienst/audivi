@@ -1,5 +1,7 @@
-import { PageProps } from '@inertiajs/core';
+import { TrackItem } from '@/Composables/usePlayer';
+import type { PageProps } from '@inertiajs/core';
 import type { Config } from 'ziggy-js';
+import BreadcrumbItemData = App.Data.BreadcrumbItemData;
 
 export interface Auth {
     user: User;
@@ -44,6 +46,8 @@ export interface SharedProps extends PageProps {
     sidebarOpen: boolean;
     canResetPassword: boolean;
     errorBags: unknown;
+    breadcrumbs: BreadcrumbItemData[];
+    trackList: TrackItem[];
     jetstream: {
         flash?: {
             banner?: string;

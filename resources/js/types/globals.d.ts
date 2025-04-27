@@ -12,3 +12,9 @@ declare global {
 
     const $t: typeof trans;
 }
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        $t: typeof trans;
+    }
+}
