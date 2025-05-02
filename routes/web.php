@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\AudioBooksController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,4 +39,8 @@ Route::middleware([
     Route::get('/audio-books/{book}', [AudioBooksController::class, 'show'])->name('audio-books.show');
     Route::get('/audio-books', [AudioBooksController::class, 'index'])->name('audio-books');
     Route::post('/audio-books', [AudioBooksController::class, 'store'])->name('audio-books.store');
+
+    Route::prefix('admin/')->name('admin.')->middleware('can:admin')->group(function () {
+        Route::resource('users', UserController::class, ['except' => ['show']]);
+    });
 });
