@@ -20,7 +20,7 @@ defineProps<Props>();
                     <SidebarMenuButton class="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100" as-child>
                         <Link :href="item.href">
                             <component :is="item.icon" />
-                            <span>{{ item.title }}</span>
+                            <span>{{ $t(item.title) }}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

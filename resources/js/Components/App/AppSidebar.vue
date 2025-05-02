@@ -5,8 +5,11 @@ import NavFooter from '@/Components/Nav/NavFooter.vue';
 import NavMain from '@/Components/Nav/NavMain.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/Components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, BuildingIcon, CogIcon, LayoutGrid, ListIcon, PencilIcon, TagIcon, UsersIcon } from 'lucide-vue-next';
+import { SharedProps } from '@/types/inertia';
+import { Link, usePage } from '@inertiajs/vue3';
+import { BookOpen, BuildingIcon, LayoutGrid, ListIcon, PencilIcon, TagIcon, UsersIcon } from 'lucide-vue-next';
+
+const page = usePage<SharedProps>();
 
 const mainNavItems: NavItem[] = [
     {
@@ -51,13 +54,8 @@ const bookShelfs: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Settings',
-        href: route('dashboard'),
-        icon: CogIcon
-    },
-    {
-        title: 'Users',
-        href: route('dashboard'),
+        title: 'navigation.users',
+        href: route('admin.users.index'),
         icon: UsersIcon
     }
 ];
@@ -85,7 +83,7 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
+            <NavFooter v-if="page.props.auth.user.is_admin" :items="footerNavItems" />
         </SidebarFooter>
     </Sidebar>
     <slot />
