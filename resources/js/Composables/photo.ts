@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/vue3';
-import { route } from 'ziggy-js';
 import { Ref } from 'vue';
+import { route } from 'ziggy-js';
 
 /**
  * Returns an object containing functions to update the preview of a photo, delete the current user's photo,
@@ -15,7 +15,7 @@ export function usePhoto(photoInput: Ref<HTMLInputElement | null>, photoPreview:
      */
     const updatePreview = (): void => {
         const files = photoInput.value?.files;
-        const photo = files && files.length ? files[0] : null;
+        const photo = files?.length ? files[0] : null;
 
         if (!photo) {
             return;

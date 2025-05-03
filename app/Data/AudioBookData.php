@@ -10,16 +10,20 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Spatie\LaravelData\Attributes\Computed;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 
-/**
- * @property Lazy|Collection<int, AuthorData> $authors
- * @property Lazy|Collection<int, TrackData> $tracks
- */
 final class AudioBookData extends Data
 {
+    public readonly ?int $duration;
+
+    #[Computed]
+    public readonly ?float $fileSize;
+
     public function __construct(
+        #[LiteralTypeScriptType('number')] // ID is only null when scanning new entries and never on the frontend
         public readonly ?int $id,
         public readonly string $title,
         public readonly string $path,
@@ -29,8 +33,10 @@ final class AudioBookData extends Data
         public readonly ?float $rating,
         public readonly ?string $cover, // TODO: Absolute URL Transform?
         public readonly ?string $language,
-        public readonly ?int $duration,
+        ?int $duration,
+        /** @var Collection<int, AuthorData> */
         public readonly Lazy|Collection $authors,
+        /** @var Collection<int, TrackData> */
         public readonly Lazy|Collection $tracks,
         public readonly Lazy|SeriesData|null $series = null,
         public readonly Lazy|PublisherData|null $publisher = null,
@@ -38,6 +44,24 @@ final class AudioBookData extends Data
         public readonly DateTime|Carbon|null $created_at = null,
         public readonly DateTime|Carbon|null $updated_at = null,
     ) {
+        /** @var Collection<int, TrackData> $tmpTracks */
+        $tmpTracks = $this->tracks instanceof Lazy ? $this->tracks->resolve() : $this->tracks;
+
+        if ($duration === null && $tmpTracks->isNotEmpty()) {
+            $this->duration = $tmpTracks->sum(static fn (TrackData $track) => $track->duration);
+        } else {
+            $this->duration = $duration;
+        }
+
+        if ($tmpTracks->isNotEmpty()) {
+            $this->fileSize = $tmpTracks
+                ->map(static fn (TrackData $track) => $track->path)
+                ->unique()
+                ->filter(static fn (?string $trackPath) => Storage::disk('library')->exists($path.'/'.$trackPath))
+                ->sum(static fn (?string $trackPath) => Storage::disk('library')->size($path.'/'.$trackPath));
+        } else {
+            $this->fileSize = null;
+        }
     }
 
     /**

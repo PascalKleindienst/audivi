@@ -10,6 +10,7 @@ export interface Auth {
 export interface User {
     name: string;
     email: string;
+    is_admin: boolean;
     email_verified_at: string | null;
     profile_photo_url: string;
     profile_photo_path: string | null;

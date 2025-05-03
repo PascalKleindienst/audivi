@@ -1,11 +1,13 @@
 import { usePhoto } from '@/Composables/photo';
 import { useForm } from '@inertiajs/vue3';
-import { Ref, ref } from 'vue';
+import { MaybeElementRef } from '@vueuse/core';
+import { ref, toRef } from 'vue';
 import { route } from 'ziggy-js';
 import AuthorData = App.Data.AuthorData;
 
-export function useAuthor(imageInput: Ref<HTMLInputElement>, author: AuthorData) {
+export function useAuthor(imageInput: MaybeElementRef<HTMLInputElement | null>, author: AuthorData) {
     const imagePreview = ref<string | ArrayBuffer | null>(null);
+    imageInput = toRef(imageInput);
 
     const form = useForm({
         _method: 'PUT',
@@ -19,7 +21,7 @@ export function useAuthor(imageInput: Ref<HTMLInputElement>, author: AuthorData)
 
     const submit = () => {
         const files = imageInput.value?.files;
-        if (files && files.length) {
+        if (files?.length) {
             form.image = files[0] ?? null;
         }
 
