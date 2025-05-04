@@ -2,7 +2,7 @@ declare namespace App.Data {
     export type AudioBookData = {
         duration: number | null;
         fileSize: number | null;
-        id: any;
+        id: number;
         title: string;
         path: string;
         subtitle: string | null;
@@ -54,8 +54,9 @@ declare namespace App.Data {
         updated_at?: string | null;
     };
     export type SeriesData = {
-        id: number | null;
+        id: number;
         name: string;
+        books?: Array<App.Data.AudioBookData> | null;
         created_at?: string | null;
         updated_at?: string | null;
     };

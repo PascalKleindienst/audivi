@@ -88,7 +88,9 @@ final class AudioBookData extends Data
             language: $book->language,
             duration: $book->duration,
             authors: Lazy::create(static fn () => AuthorData::collect($book->authors)),
-            tracks: Lazy::create(static fn () => TrackData::collect($book->tracks)),
+            tracks: Lazy::create(static fn () => TrackData::collect(
+                $book->relationLoaded('tracks') ? $book->tracks : collect())
+            ),
             series: Lazy::create(static fn () => $book->series ? SeriesData::from($book->series) : null),
             publisher: Lazy::create(static fn () => $book->publisher ? PublisherData::from($book->publisher) : null),
             published_at: $book->published_at,

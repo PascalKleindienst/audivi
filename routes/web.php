@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\AudioBooksController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,7 @@ Route::middleware([
     })->name('dashboard');
 
     Route::resource('authors', AuthorController::class)->except(['create', 'destroy', 'store']);
+    Route::resource('series', SeriesController::class)->except(['create', 'destroy', 'store']);
 
     Route::post('/playlist/update', [PlaylistController::class, 'update'])->name('playlist.update');
     Route::get('/playlist/play/{track}', [PlaylistController::class, 'play'])->name('playlist.play');
