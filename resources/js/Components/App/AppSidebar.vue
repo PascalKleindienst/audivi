@@ -15,11 +15,13 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
+        isActive: route().current('dashboard'),
         icon: LayoutGrid
     },
     {
         title: 'navigation.books',
         href: route('audio-books'),
+        isActive: route().current('audio-books.*'),
         icon: BookOpen
     },
     {
@@ -29,12 +31,14 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'navigation.series',
-        href: route('dashboard'),
+        href: route('series.index'),
+        isActive: route().current('series.*'),
         icon: ListIcon
     },
     {
         title: 'navigation.authors',
         href: route('authors.index'),
+        isActive: route().current('authors.*'),
         icon: PencilIcon
     },
     {
@@ -56,6 +60,7 @@ const footerNavItems: NavItem[] = [
     {
         title: 'navigation.users',
         href: route('admin.users.index'),
+        isActive: route().current('admin.users.*'),
         icon: UsersIcon
     }
 ];
