@@ -18,7 +18,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <AppShell variant="sidebar">
-        <AppSidebar />
+        <AppSidebar :key="route().current()" />
         <AppContent variant="sidebar">
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
 
