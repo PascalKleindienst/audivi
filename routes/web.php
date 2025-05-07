@@ -33,6 +33,7 @@ Route::middleware([
     })->name('dashboard');
 
     Route::resource('authors', AuthorController::class)->except(['create', 'destroy', 'store']);
+    Route::post('authors/{author}/metadata', [AuthorController::class, 'metadata'])->name('authors.metadata');
     Route::resource('series', SeriesController::class)->except(['create', 'destroy', 'store']);
 
     Route::post('/playlist/update', [PlaylistController::class, 'update'])->name('playlist.update');

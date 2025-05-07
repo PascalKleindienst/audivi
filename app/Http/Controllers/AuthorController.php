@@ -7,13 +7,19 @@ namespace App\Http\Controllers;
 use App\Data\AudioBookData;
 use App\Data\AuthorData;
 use App\Data\BreadcrumbItemData;
+use App\Facades\DataProvider;
+use App\Http\Requests\FetchMetadataRequest;
+use App\Library\DataProviders\DataType;
+use App\Library\DataProviders\UnsupportedDataTypeError;
 use App\Models\Author;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use InvalidArgumentException;
 use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\PaginatedDataCollection;
 
@@ -54,7 +60,11 @@ final class AuthorController extends Controller
             BreadcrumbItemData::from(trans('general.edit'))
         );
 
-        return Inertia::render('Author/Edit', ['author' => AuthorData::from($author)->include('*')]);
+        return Inertia::render('Author/Edit', [
+            'author' => AuthorData::from($author)->include('*'),
+            'providers' => DataProvider::providers(),
+            'defaultProvider' => DataProvider::getDefaultDriver(),
+        ]);
     }
 
     public function update(Author $author, AuthorData $data): RedirectResponse
@@ -77,5 +87,22 @@ final class AuthorController extends Controller
 
         return Redirect::route('authors.show', $author->id)
             ->banner(__('author.updated.success'));
+    }
+
+    public function metadata(Author $author, FetchMetadataRequest $request): JsonResponse
+    {
+        try {
+            $data = $request->validated();
+
+            return response()->json([
+                'authors' => DataProvider::provider($data['provider'])
+                    ->search($author->name, DataType::AUTHOR, $data['locale'] ?? app()->getLocale()),
+            ]);
+        } catch (UnsupportedDataTypeError|InvalidArgumentException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ], 400);
+        }
     }
 }
