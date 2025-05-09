@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Library\DataProviders\Concerns;
 
 use App\Library\DataProviders\Contracts\AuthorDataProvider;
+use App\Library\DataProviders\Contracts\BookDataProvider;
 use App\Library\DataProviders\DataType;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Pool;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 trait IsDataProvider
@@ -17,8 +22,36 @@ trait IsDataProvider
     {
         return match ($type) {
             DataType::AUTHOR => $this instanceof AuthorDataProvider,
+            DataType::BOOK => $this instanceof BookDataProvider,
             default => false
         };
+    }
+
+    /**
+     * @param  array<string, string>  $items
+     * @param  callable(PendingRequest, string): Response  $callback
+     * @return Response[]
+     */
+    private function fetchMultipleItems(array $items, callable $callback, int $limit = 10): array
+    {
+        $items = array_unique($items);
+        $items = array_splice($items, 0, $limit);
+
+        return $this->getClient()->pool(fn (Pool $pool) => Arr::map(
+            $items,
+            fn (string $item, string $id) => $callback($pool->withOptions($this->getClientOptions()), $id)
+        ));
+    }
+
+    /**
+     * @param  Response[]  $responses
+     * @return Collection<int|string, array<mixed>>
+     */
+    private function getResponses(array $responses): Collection
+    {
+        return collect($responses)
+            ->filter(fn ($response) => $response->ok())
+            ->map(fn (Response $response) => $response->json());
     }
 
     private function getClient(): PendingRequest

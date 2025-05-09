@@ -24,9 +24,17 @@ final class DataProviderManager extends Manager
     /**
      * @return list<int|string>
      */
-    public function providers(): array
+    public function providers(?DataType $type = null): array
     {
-        return array_keys(config('audivi.data_providers', []));
+        $result = [];
+        $providers = array_keys(config('audivi.data_providers', []));
+        foreach ($providers as $provider) {
+            if ($type === null || $this->driver($provider)->supports($type)) {
+                $result[] = $provider;
+            }
+        }
+
+        return $result;
     }
 
     public function createAudibleDriver(): AudibleDataProvider

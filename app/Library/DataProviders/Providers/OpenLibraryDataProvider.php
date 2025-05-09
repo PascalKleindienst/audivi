@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Library\DataProviders\Providers;
 
 use App\Data\AuthorData;
-use App\Library\DataProviders\Concerns\IsAuthorDataProvider;
 use App\Library\DataProviders\Concerns\IsDataProvider;
 use App\Library\DataProviders\Contracts\AuthorDataProvider;
 use App\Library\DataProviders\Contracts\DataProviderDriver;
@@ -30,7 +29,6 @@ use Illuminate\Support\Facades\Cache;
  */
 final class OpenLibraryDataProvider implements AuthorDataProvider, DataProviderDriver
 {
-    use IsAuthorDataProvider;
     use IsDataProvider;
 
     public static function identifier(): string
@@ -44,27 +42,26 @@ final class OpenLibraryDataProvider implements AuthorDataProvider, DataProviderD
             throw UnsupportedDataTypeError::from($type);
         }
 
-        $cacheKey = 'openlibrary:search:'.$query;
-        if (Cache::has($cacheKey)) {
-            return Cache::get($cacheKey);
-        }
+        return Cache::remember('openlibrary:search:'.$query, now()->addMinutes(60), fn () => $this->searchAuthor($query, $locale));
+    }
 
+    public function searchAuthor(string $query, ?string $locale = null): Collection
+    {
         // Search for all authors and then get the details
         $response = $this->getClient()->withQueryParameters(['q' => $query])->get('search/authors.json');
         $authors = array_column($response->json()['docs'] ?? [], 'name', 'key');
 
-        $responses = $this->fetchMultipleAuthorDetails($authors, static fn (PendingRequest $request, string $id) => $request
+        $responses = $this->fetchMultipleItems($authors, static fn (PendingRequest $request, string $id) => $request
             ->withUrlParameters(['olid' => $id])
             ->get('authors/{olid}.json')
         );
 
-        return Cache::remember($cacheKey, now()->addMinutes(60), fn () => $this
-            ->mapAuthorResponses($responses)
+        return $this
+            ->getResponses($responses)
             ->map(function (array $response) {
                 /** @var AuthorApiResponse $response */
                 return $this->mapAuthorDetails($response);
-            })
-        );
+            });
     }
 
     public function fetch(int|string $id, DataType $type, ?string $locale = null): AuthorData
