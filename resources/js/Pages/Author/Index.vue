@@ -3,8 +3,7 @@ import Pagination from '@/Components/Pagination.vue';
 import { Button } from '@/Components/ui/button';
 import { Grid, GridItem } from '@/Components/ui/grid';
 import { PaginatedDataCollection } from '@/types/inertia';
-import { Head, Link } from '@inertiajs/vue3';
-import { trans } from 'laravel-vue-i18n';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { LayoutGridIcon, ListIcon } from 'lucide-vue-next';
 import { ref } from 'vue';
 import AuthorData = App.Data.AuthorData;
@@ -17,7 +16,7 @@ const layout = ref('grid');
 </script>
 
 <template>
-    <Head :title="trans('author.title')" />
+    <Head :title="$t('author.title')" />
 
     <div class="p-4">
         <Button size="icon" :variant="layout === 'list' ? 'default' : 'secondary'" class="rounded-tr-none rounded-br-none" @click="layout = 'list'">
@@ -30,7 +29,7 @@ const layout = ref('grid');
 
     <Grid v-if="layout === 'grid'" data-testid="author-grid" class="p-4">
         <GridItem v-for="author in props.authors.data" :key="author.id" as-child>
-            <Link :href="route('authors.show', author.id)" @keydown.space.prevent="() => $inertia.visit(route('authors.show', author.id))">
+            <Link :href="route('authors.show', author.id)" @keydown.space.prevent="() => router.visit(route('authors.show', author.id))">
                 <div class="space-y-4">
                     <img
                         v-if="author.image"
@@ -51,7 +50,7 @@ const layout = ref('grid');
     </Grid>
     <Grid v-else class="[grid-template-columns:repeat(auto-fill,_minmax(360px,_1fr))] p-4" data-testid="author-grid">
         <GridItem v-for="author in props.authors.data" :key="author.id" as-child>
-            <Link :href="route('authors.show', author.id)" @keydown.space.prevent="() => $inertia.visit(route('authors.show', author.id))">
+            <Link :href="route('authors.show', author.id)" @keydown.space.prevent="() => router.visit(route('authors.show', author.id))">
                 <div class="flex gap-4 space-y-4">
                     <img
                         v-if="author.image"

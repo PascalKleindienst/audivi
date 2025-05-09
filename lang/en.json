@@ -54,6 +54,7 @@
     "author.name": "Name",
     "author.title": "Authors",
     "author.updated.success": "Author was successfully updated.",
+    "metadata.fetch": "Fetch Metadata",
     "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.": "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.",
     "Browser Sessions": "Browser Sessions",
     "Cancel": "Cancel",

@@ -4,7 +4,7 @@ export { default as ListingLayout } from './ListingLayout.vue';
 export { default as ListLayout } from './ListLayout.vue';
 
 export type LayoutType = 'grid' | 'list';
-export type ItemProps = { id: string | number };
+export type ItemProps = { id: string | number; [key: string]: unknown };
 
 import { useStorage } from '@vueuse/core';
 

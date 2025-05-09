@@ -52,6 +52,7 @@
     "author.name": "Name",
     "author.title": "Autoren",
     "author.updated.success": "Author wurde erfolgreich aktualisiert.",
+    "metadata.fetch": "Metadaten laden",
     "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.": "Bitte bestätigen Sie Ihre E-Mail-Adresse mit dem zugesandten Link, bevor Sie fortfahren. Sollten Sie keine E-Mail erhalten haben, senden wir Ihnen diese gerne erneut.",
     "Browser Sessions": "Browsersitzungen",
     "Cancel": "Abbrechen",
