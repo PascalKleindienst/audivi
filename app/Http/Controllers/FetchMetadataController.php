@@ -11,9 +11,9 @@ use App\Library\DataProviders\UnsupportedDataTypeError;
 use Illuminate\Http\JsonResponse;
 use InvalidArgumentException;
 
-final class MetadataController extends Controller
+final class FetchMetadataController extends Controller
 {
-    public function fetch(FetchMetadataRequest $request): JsonResponse
+    public function __invoke(FetchMetadataRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
