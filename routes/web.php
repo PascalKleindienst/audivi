@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\AudioBooksController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\MetadataController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\UserController;
@@ -32,8 +33,9 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
+    Route::post('/metadata/fetch', [MetadataController::class, 'fetch'])->name('metadata.fetch');
+
     Route::resource('authors', AuthorController::class)->except(['create', 'destroy', 'store']);
-    Route::post('authors/{author}/metadata', [AuthorController::class, 'metadata'])->name('authors.metadata');
     Route::resource('series', SeriesController::class)->except(['create', 'destroy', 'store']);
 
     Route::post('/playlist/update', [PlaylistController::class, 'update'])->name('playlist.update');

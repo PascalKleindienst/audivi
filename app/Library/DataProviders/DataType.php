@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Library\DataProviders;
 
-enum DataType
+enum DataType: string
 {
-    case AUTHOR;
-    case BOOK;
+    case AUTHOR = 'author';
+    case BOOK = 'book';
 }
