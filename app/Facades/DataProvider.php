@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see DataProviderManager
  */
-class DataProvider extends Facade
+final class DataProvider extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
