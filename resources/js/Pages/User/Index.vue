@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import Pagination from '@/Components/Pagination.vue';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle
+} from '@/Components/ui/alert-dialog';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Switch } from '@/Components/ui/switch';
@@ -111,19 +120,20 @@ const search = ref('');
         </Table>
         <!--</Card>-->
 
-        <ConfirmationModal :show="userBeingDeleted != null" @close="userBeingDeleted = null">
-            <template #title>{{ $t('user.delete.confirmation.title') }}</template>
-
-            <template #content>{{ $t('user.delete.confirmation.description') }}</template>
-
-            <template #footer>
-                <Button variant="ghost" @click="userBeingDeleted = null"> {{ $t('Cancel') }}</Button>
-
-                <Button variant="destructive" @click="deleteUser">
-                    {{ $t('Delete') }}
-                </Button>
-            </template>
-        </ConfirmationModal>
+        <AlertDialog :open="userBeingDeleted != null" @update:open="userBeingDeleted = null">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>{{ $t('user.delete.confirmation.title') }}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        {{ $t('user.delete.confirmation.description') }}
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>{{ $t('Cancel') }}</AlertDialogCancel>
+                    <AlertDialogAction @click="deleteUser">{{ $t('Delete') }}</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
 
         <Pagination :paginator="users" :only="['users']" />
     </section>
