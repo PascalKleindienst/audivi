@@ -14,7 +14,7 @@ defineProps<{
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
                 <SidebarMenuButton as-child :is-active="item.isActive" :tooltip="$t(item.title)">
-                    <Link :href="item.href">
+                    <Link :href="item.href" prefetch>
                         <component :is="item.icon" />
                         <span>{{ $t(item.title) }}</span>
                     </Link>

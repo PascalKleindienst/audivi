@@ -14,7 +14,7 @@ class Events<T> {
     }
 
     emit<P extends T>(event: string, payload?: P) {
-        this.listeners[event].forEach((listener) => listener(payload));
+        this.listeners[event].forEach((listener) => listener(payload as T));
     }
 }
 
