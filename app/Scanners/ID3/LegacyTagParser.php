@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Scanners\ID3;
 
-use App\Data\ID3\Genre;
 use App\Data\ID3\TagData;
+use App\Enums\ID3\Genre;
 use App\Scanners\Parser;
 use App\Utils\FileByteReader;
 use App\ValueObjects\Buffer;
 use App\ValueObjects\Version;
 use Spatie\LaravelData\Data;
+
+use function strlen;
 
 /**
  * @implements Parser<TagData>
@@ -25,7 +27,7 @@ final readonly class LegacyTagParser implements Parser
         // Specification: https://id3.org/ID3v1
         $headerBuffer = $this->getRaw($buffer, 128, -128);
 
-        return \strlen($headerBuffer->content) === 128 && $this->getString($headerBuffer, 3)->content === 'TAG';
+        return strlen($headerBuffer->content) === 128 && $this->getString($headerBuffer, 3)->content === 'TAG';
     }
 
     public function parse(Buffer $buffer): Data

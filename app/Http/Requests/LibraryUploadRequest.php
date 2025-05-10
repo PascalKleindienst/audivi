@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Library\Library;
+use App\Facades\Library;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request as RequestFacade;
@@ -47,7 +47,7 @@ class LibraryUploadRequest extends FormRequest
         $this->request->set('normalized_folder', $folder);
 
         if (! RequestFacade::boolean('overwrite') && RequestFacade::boolean('isFirst')) {
-            if (Storage::disk('library')->exists($folder . '/' . $filename)) {
+            if (Storage::disk('library')->exists($folder.'/'.$filename)) {
                 $validator->errors()->add('fileAlreadyExists', 'File already exists');
             }
 

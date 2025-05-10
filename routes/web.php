@@ -6,6 +6,7 @@ use App\Http\Controllers\AudioBooksController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\FetchMetadataController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\PlayTrackController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
@@ -39,7 +40,7 @@ Route::middleware([
     Route::resource('series', SeriesController::class)->except(['create', 'destroy', 'store']);
 
     Route::post('/playlist/update', [PlaylistController::class, 'update'])->name('playlist.update');
-    Route::get('/playlist/play/{track}', [PlaylistController::class, 'play'])->name('playlist.play');
+    Route::get('/playlist/play/{track}', PlayTrackController::class)->name('playlist.play');
 
     Route::get('/audio-books/{book}', [AudioBooksController::class, 'show'])->name('audio-books.show');
     Route::get('/audio-books', [AudioBooksController::class, 'index'])->name('audio-books');

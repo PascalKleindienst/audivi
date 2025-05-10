@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Scanners\ID3;
 
 use App\Data\ID3\FrameData;
-use App\Data\ID3\FrameType;
-use App\Data\ID3\Genre;
-use App\Data\ID3\ImageType;
 use App\Data\ID3\ImageValueData;
-use App\Scanners\ParserError;
+use App\Enums\ID3\FrameType;
+use App\Enums\ID3\Genre;
+use App\Enums\ID3\ImageType;
+use App\Exceptions\ParserError;
 use App\Utils\FileByteReader;
 use App\ValueObjects\Buffer;
 use App\ValueObjects\Version;
 use Spatie\LaravelData\Data;
+
+use function chr;
+use function is_string;
 
 /**
  * @implements \App\Scanners\Parser<FrameData>
@@ -77,7 +80,7 @@ final readonly class FrameParser implements \App\Scanners\Parser
             default => null
         };
 
-        if ($header['id']->content === 'TCON' && \is_string($val)) {
+        if ($header['id']->content === 'TCON' && is_string($val)) {
             $val = Genre::tryFrom((int) trim($val, '()'));
         }
 
@@ -104,7 +107,7 @@ final readonly class FrameParser implements \App\Scanners\Parser
         }
 
         $variableStart = 11;
-        $variableLength = $buffer->position(\chr(0), $variableStart) - $variableStart;
+        $variableLength = $buffer->position(chr(0), $variableStart) - $variableStart;
         $imageType = $this->getUint($buffer, $variableStart + $variableLength + 1);
 
         $image = [

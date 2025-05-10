@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data\Library;
+namespace App\Enums;
 
 enum ScanResultType: string
 {

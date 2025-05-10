@@ -56,7 +56,7 @@ final class SaveAudioBook
         if (! empty($data->tracks) && $data->tracks instanceof Collection) {
             foreach ($data->tracks as $track) {
                 Track::updateOrCreate(
-                    ['audio_book_id' => $book->id, 'position' => $track->position, 'path' => $track->path],
+                    ['audio_book_id' => $book->id, 'position' => $track->position],
                     [
                         'title' => $track->title,
                         'path' => $track->path,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\ID3;
 
+use App\Enums\ID3\ImageType;
 use Spatie\LaravelData\Data;
 
 final class ImageValueData extends Data
@@ -13,6 +14,5 @@ final class ImageValueData extends Data
         public readonly string $mime,
         public readonly ?string $description,
         public readonly string $data
-    ) {
-    }
+    ) {}
 }

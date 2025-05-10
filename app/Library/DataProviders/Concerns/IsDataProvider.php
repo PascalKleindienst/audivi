@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Library\DataProviders\Concerns;
 
+use App\Enums\DataProviderType;
 use App\Library\DataProviders\Contracts\AuthorDataProvider;
 use App\Library\DataProviders\Contracts\BookDataProvider;
-use App\Library\DataProviders\DataType;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
@@ -18,11 +18,11 @@ trait IsDataProvider
 {
     private ?PendingRequest $client = null;
 
-    public function supports(DataType $type): bool
+    public function supports(DataProviderType $type): bool
     {
         return match ($type) {
-            DataType::AUTHOR => $this instanceof AuthorDataProvider,
-            DataType::BOOK => $this instanceof BookDataProvider,
+            DataProviderType::AUTHOR => $this instanceof AuthorDataProvider,
+            DataProviderType::BOOK => $this instanceof BookDataProvider,
             default => false
         };
     }

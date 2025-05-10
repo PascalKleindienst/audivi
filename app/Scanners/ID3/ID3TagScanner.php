@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace App\Scanners\ID3;
 
-use App\Data\ID3\ImageType;
 use App\Data\ID3\ImageValueData;
 use App\Data\ID3\TagData;
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
 use App\Data\TrackData;
+use App\Enums\ID3\ImageType;
+use App\Exceptions\ParserError;
 use App\Scanners\AudioFileScanner;
-use App\Scanners\ParserError;
 use App\ValueObjects\Buffer;
 use App\ValueObjects\Version;
-use DateTime;
+use DateTimeImmutable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use TypeError;
+
+use function dirname;
+use function ord;
+use function strlen;
 
 /**
  * @see https://id3.org/ID3v1
@@ -59,7 +63,7 @@ final class ID3TagScanner extends AudioFileScanner
         foreach ($this->tags as $tag) {
             $meta = [
                 'publisher' => $tag->publisher ?? null,
-                'published_at' => $tag->year ? DateTime::createFromFormat('Y', (string) $tag->year) : null,
+                'published_at' => $tag->year ? DateTimeImmutable::createFromFormat('Y', (string) $tag->year) : null,
                 'description' => $tag->comments,
                 'authors' => $tag->artist,
                 'language' => $tag->language,
@@ -97,13 +101,13 @@ final class ID3TagScanner extends AudioFileScanner
         }
 
         $header = fread($stream, 10);
-        if (! $header || \strlen($header) < 10) {
+        if (! $header || strlen($header) < 10) {
             return 0;
         }
 
         // Check for ID3v2 tag
         if (str_starts_with($header, 'ID3')) {
-            $id3v2Size = (\ord($header[6]) << 21) | (\ord($header[7]) << 14) | (\ord($header[8]) << 7) | \ord($header[9]);
+            $id3v2Size = (ord($header[6]) << 21) | (ord($header[7]) << 14) | (ord($header[8]) << 7) | ord($header[9]);
             fseek($stream, $id3v2Size, SEEK_CUR);
         } else {
             fseek($stream, -10, SEEK_CUR);
@@ -116,17 +120,17 @@ final class ID3TagScanner extends AudioFileScanner
         while (! feof($stream)) {
             // Read the MP3 frame header
             $frameHeader = fread($stream, 4);
-            if (! $frameHeader || \strlen($frameHeader) < 4) {
+            if (! $frameHeader || strlen($frameHeader) < 4) {
                 break;
             }
 
             // Check for frame sync (11 bits set)
-            if ((\ord($frameHeader[0]) & 0xFF) !== 0xFF || (\ord($frameHeader[1]) & 0xE0) !== 0xE0) {
+            if ((ord($frameHeader[0]) & 0xFF) !== 0xFF || (ord($frameHeader[1]) & 0xE0) !== 0xE0) {
                 break;
             }
 
-            $bitrateIndex = (\ord($frameHeader[2]) & 0xF0) >> 4;
-            $sampleRateIndex = (\ord($frameHeader[2]) & 0x0C) >> 2;
+            $bitrateIndex = (ord($frameHeader[2]) & 0xF0) >> 4;
+            $sampleRateIndex = (ord($frameHeader[2]) & 0x0C) >> 2;
 
             $bitrate = $bitrates[$bitrateIndex] ?? null;
             $samplerate = $samplerates[$sampleRateIndex] ?? null;
@@ -136,7 +140,7 @@ final class ID3TagScanner extends AudioFileScanner
             }
 
             // Calculate frame length in bytes
-            $padding = (\ord($frameHeader[2]) & 0x02) >> 1;
+            $padding = (ord($frameHeader[2]) & 0x02) >> 1;
             $frameLength = (144 * $bitrate) / $samplerate + $padding;
 
             // Calculate duration of the frame
@@ -170,7 +174,7 @@ final class ID3TagScanner extends AudioFileScanner
 
             $coverContent = $cover->data;
             $track = $tag->track && $tag->track !== '1' ? $tag->track : '';
-            $this->cover = \dirname($file)."/Cover{$track}.{$extension}";
+            $this->cover = dirname($file)."/Cover{$track}.{$extension}";
 
             Storage::disk('library')->put($this->cover, $coverContent);
         }

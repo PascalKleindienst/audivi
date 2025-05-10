@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Data\Library;
 
+use App\Enums\ScanResultType;
 use Spatie\LaravelData\Data;
 
-class ScanResultData extends Data
+final class ScanResultData extends Data
 {
     public function __construct(
         public string $path,
         public ScanResultType $result = ScanResultType::SUCCESS,
         public ?string $error = null
-    ) {
-    }
+    ) {}
 
     public static function success(string $path): self
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\ID3;
 
+use App\Enums\ID3\Genre;
 use App\ValueObjects\Version;
 use Spatie\LaravelData\Data;
 
@@ -25,6 +26,5 @@ final class TagData extends Data
         public readonly array $frames = [],
         /** @var ImageValueData[] */
         public readonly array $images = []
-    ) {
-    }
+    ) {}
 }

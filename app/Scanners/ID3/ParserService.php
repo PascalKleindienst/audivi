@@ -6,10 +6,12 @@ namespace App\Scanners\ID3;
 
 use App\Data\ID3\FrameData;
 use App\Data\ID3\TagData;
-use App\Scanners\ParserError;
+use App\Exceptions\ParserError;
 use App\Utils\FileByteReader;
 use App\ValueObjects\Buffer;
 use App\ValueObjects\Version;
+
+use function ord;
 
 final readonly class ParserService
 {
@@ -20,8 +22,7 @@ final readonly class ParserService
         private FrameParser $frameParser,
         private LegacyTagParser $legacyTagParser,
         private LegacyFrameParser $legacyFrameParser,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ParserError
@@ -62,8 +63,8 @@ final readonly class ParserService
 
             // If the framebit is not part of [A-Z0-9] its not the start of a frame
             if (
-                max(min($frameBit, \ord('Z')), \ord('A')) !== $frameBit &&
-                max(min($frameBit, \ord('9')), \ord('0')) !== $frameBit
+                max(min($frameBit, ord('Z')), ord('A')) !== $frameBit &&
+                max(min($frameBit, ord('9')), ord('0')) !== $frameBit
             ) {
                 return false;
             }

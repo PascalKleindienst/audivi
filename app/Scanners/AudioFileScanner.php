@@ -7,15 +7,19 @@ namespace App\Scanners;
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
 use App\Data\Library\ScanResultData;
+use App\Exceptions\FileError;
 use App\ValueObjects\Buffer;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 abstract class AudioFileScanner implements FileScannerInterface
 {
     protected const MAX_FILE_CONTENT = 16 * 1024 * 1024; // 16 MiB
 
     protected ItemData $item;
+
+    abstract protected function parseFileContent(ItemData $item, string $file, Buffer $content): void;
 
     public function setItem(ItemData $item): void
     {
@@ -38,7 +42,7 @@ abstract class AudioFileScanner implements FileScannerInterface
 
         try {
             $content = $this->getFileContent($file);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             Log::debug('Could read file content', ['file' => $file, 'scanner' => static::class]);
 
             return ScanResultData::error($file, $th->getMessage());
@@ -56,8 +60,6 @@ abstract class AudioFileScanner implements FileScannerInterface
     {
         return $this->item->meta;
     }
-
-    abstract protected function parseFileContent(ItemData $item, string $file, Buffer $content): void;
 
     /**
      * @throws FileError if the file could not be read

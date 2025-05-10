@@ -7,8 +7,8 @@ namespace App\Http\Controllers;
 use App\Data\AudioBookData;
 use App\Data\AuthorData;
 use App\Data\BreadcrumbItemData;
+use App\Enums\DataProviderType;
 use App\Facades\DataProvider;
-use App\Library\DataProviders\DataType;
 use App\Models\Author;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
@@ -58,7 +58,7 @@ final class AuthorController extends Controller
 
         return Inertia::render('Author/Edit', [
             'author' => AuthorData::from($author)->include('*'),
-            'providers' => DataProvider::providers(DataType::AUTHOR),
+            'providers' => DataProvider::providers(DataProviderType::AUTHOR),
             'defaultProvider' => DataProvider::getDefaultDriver(),
         ]);
     }

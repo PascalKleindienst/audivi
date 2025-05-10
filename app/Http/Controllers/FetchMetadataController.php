@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\DataProviderType;
+use App\Exceptions\UnsupportedDataTypeError;
 use App\Facades\DataProvider;
 use App\Http\Requests\FetchMetadataRequest;
-use App\Library\DataProviders\DataType;
-use App\Library\DataProviders\UnsupportedDataTypeError;
 use Illuminate\Http\JsonResponse;
 use InvalidArgumentException;
 
@@ -20,7 +20,7 @@ final class FetchMetadataController extends Controller
 
             return response()->json([
                 'items' => DataProvider::provider($data['provider'])
-                    ->search($data['query'], DataType::from($data['type']), $data['locale'] ?? app()->getLocale()),
+                    ->search($data['query'], DataProviderType::from($data['type']), $data['locale'] ?? app()->getLocale()),
             ]);
         } catch (UnsupportedDataTypeError|InvalidArgumentException $e) {
             return response()->json([

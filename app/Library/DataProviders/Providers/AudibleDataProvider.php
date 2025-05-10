@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Library\DataProviders\Providers;
 
 use App\Data\AuthorData;
+use App\Enums\DataProviderType;
+use App\Exceptions\UnsupportedDataTypeError;
 use App\Library\DataProviders\Concerns\IsDataProvider;
 use App\Library\DataProviders\Contracts\AuthorDataProvider;
 use App\Library\DataProviders\Contracts\BookDataProvider;
 use App\Library\DataProviders\Contracts\DataProviderDriver;
-use App\Library\DataProviders\DataType;
-use App\Library\DataProviders\UnsupportedDataTypeError;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -31,7 +31,7 @@ final class AudibleDataProvider implements AuthorDataProvider, BookDataProvider,
         return 'audible';
     }
 
-    public function search(string $query, DataType $type, ?string $locale = null): Collection
+    public function search(string $query, DataProviderType $type, ?string $locale = null): Collection
     {
         if (! $this->supports($type)) {
             throw UnsupportedDataTypeError::from($type);
@@ -42,7 +42,7 @@ final class AudibleDataProvider implements AuthorDataProvider, BookDataProvider,
 
         $cacheKey = 'audible:search:'.$query.':'.$locale;
 
-        if ($type === DataType::BOOK) {
+        if ($type === DataProviderType::BOOK) {
             return Cache::remember($cacheKey, now()->addMinutes(60), fn () => $this->searchBook($query, $locale));
         }
 
@@ -110,7 +110,7 @@ final class AudibleDataProvider implements AuthorDataProvider, BookDataProvider,
             });
     }
 
-    public function fetch(int|string $id, DataType $type, ?string $locale = null): AuthorData
+    public function fetch(int|string $id, DataProviderType $type, ?string $locale = null): AuthorData
     {
         $cacheKey = 'audivi:fetch:'.$id.':'.$locale;
 

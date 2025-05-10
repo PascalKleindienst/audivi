@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data\ID3;
+namespace App\Enums\ID3;
 
 /**
  * @see https://en.wikipedia.org/wiki/List_of_ID3v1_genres

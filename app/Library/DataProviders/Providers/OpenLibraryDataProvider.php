@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Library\DataProviders\Providers;
 
 use App\Data\AuthorData;
+use App\Enums\DataProviderType;
+use App\Exceptions\UnsupportedDataTypeError;
 use App\Library\DataProviders\Concerns\IsDataProvider;
 use App\Library\DataProviders\Contracts\AuthorDataProvider;
 use App\Library\DataProviders\Contracts\DataProviderDriver;
-use App\Library\DataProviders\DataType;
-use App\Library\DataProviders\UnsupportedDataTypeError;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -36,7 +36,7 @@ final class OpenLibraryDataProvider implements AuthorDataProvider, DataProviderD
         return 'openlibrary';
     }
 
-    public function search(string $query, DataType $type, ?string $locale = null): Collection
+    public function search(string $query, DataProviderType $type, ?string $locale = null): Collection
     {
         if (! $this->supports($type)) {
             throw UnsupportedDataTypeError::from($type);
@@ -64,7 +64,7 @@ final class OpenLibraryDataProvider implements AuthorDataProvider, DataProviderD
             });
     }
 
-    public function fetch(int|string $id, DataType $type, ?string $locale = null): AuthorData
+    public function fetch(int|string $id, DataProviderType $type, ?string $locale = null): AuthorData
     {
         $cacheKey = 'openlibrary:fetch:'.$id.':'.$locale;
 

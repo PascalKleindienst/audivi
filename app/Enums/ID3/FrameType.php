@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data\ID3;
+namespace App\Enums\ID3;
 
 enum FrameType
 {

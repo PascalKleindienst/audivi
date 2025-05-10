@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Library\DataProviders;
+namespace App\Enums;
 
-enum DataType: string
+enum DataProviderType: string
 {
     case AUTHOR = 'author';
     case BOOK = 'book';

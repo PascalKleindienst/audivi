@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Library\DataProviders;
 
+use App\Enums\DataProviderType;
 use App\Library\DataProviders\Contracts\DataProviderDriver;
 use App\Library\DataProviders\Providers\AudibleDataProvider;
 use App\Library\DataProviders\Providers\OpenLibraryDataProvider;
@@ -24,7 +25,7 @@ final class DataProviderManager extends Manager
     /**
      * @return list<int|string>
      */
-    public function providers(?DataType $type = null): array
+    public function providers(?DataProviderType $type = null): array
     {
         $result = [];
         $providers = array_keys(config('audivi.data_providers', []));

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Scanners\ID3;
 
-use App\Data\ID3\FrameType;
 use App\Data\ID3\ImageValueData;
 use App\Data\ID3\TagData;
-use App\Scanners\ParserError;
+use App\Enums\ID3\FrameType;
+use App\Exceptions\ParserError;
 use App\Utils\FileByteReader;
 use App\ValueObjects\Buffer;
 use App\ValueObjects\Version;

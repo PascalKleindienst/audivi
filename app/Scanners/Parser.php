@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Scanners;
 
+use App\Exceptions\ParserError;
 use App\ValueObjects\Buffer;
 use App\ValueObjects\Version;
 use Spatie\LaravelData\Data;

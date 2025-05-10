@@ -14,6 +14,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
+use function count;
+
 final class LibraryFactory
 {
     public function __construct(
@@ -45,7 +47,7 @@ final class LibraryFactory
         ];
 
         // If there are at least 2 more directories, next furthest will be the series
-        if (\count($splitDir) > 1) {
+        if (count($splitDir) > 1) {
             $meta['series'] = array_pop($splitDir);
 
             $series = Library::matchBySeries($meta['title']);
@@ -55,7 +57,7 @@ final class LibraryFactory
             }
         }
 
-        if (\count($splitDir) > 0) {
+        if (count($splitDir) > 0) {
             $meta['authors'] = array_pop($splitDir);
         }
 
@@ -88,7 +90,7 @@ final class LibraryFactory
 
         // save cover to public
         if ($metadata->cover && File::exists($metadata->cover)) {
-            $data['cover'] = 'covers/'.sha1($metadata->cover).'.'.File::extension($metadata->cover);
+            $data['cover'] = 'covers/'.hash('sha1', $metadata->cover).'.'.File::extension($metadata->cover);
             File::copy($metadata->cover, Storage::disk('public')->path($data['cover']));
         }
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\DataProviderType;
 use App\Facades\DataProvider;
-use App\Library\DataProviders\DataType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\In;
 
-class FetchMetadataRequest extends FormRequest
+final class FetchMetadataRequest extends FormRequest
 {
     /**
      * @return array<string, list<In|string>>
@@ -19,7 +19,7 @@ class FetchMetadataRequest extends FormRequest
     {
         return [
             'query' => ['required', 'string'],
-            'type' => ['required', 'string', Rule::in(DataType::cases())],
+            'type' => ['required', 'string', Rule::in(DataProviderType::cases())],
             'provider' => ['required', 'string', Rule::in(DataProvider::providers())],
             'locale' => ['string'],
         ];

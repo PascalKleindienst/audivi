@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace App\Scanners\ID3;
 
 use App\Data\ID3\FrameData;
-use App\Data\ID3\FrameType;
-use App\Data\ID3\Genre;
-use App\Data\ID3\ImageType;
 use App\Data\ID3\ImageValueData;
-use App\Scanners\ParserError;
+use App\Enums\ID3\FrameType;
+use App\Enums\ID3\Genre;
+use App\Enums\ID3\ImageType;
+use App\Exceptions\ParserError;
 use App\Utils\FileByteReader;
 use App\ValueObjects\Buffer;
 use App\ValueObjects\Version;
+
+use function chr;
 
 /**
  * @implements \App\Scanners\Parser<FrameData>
@@ -57,7 +59,7 @@ final readonly class LegacyFrameParser implements \App\Scanners\Parser
             $result['value'] = $this->getString($buffer, null, 7);
         } elseif ($header['id']->content === 'PIC') {
             $variableStart = 11;
-            $variableLength = $buffer->position(\chr(0), $variableStart) - $variableStart;
+            $variableLength = $buffer->position(chr(0), $variableStart) - $variableStart;
             $imageType = $this->getUint($buffer, 11);
 
             $result['value'] = ImageValueData::from([
