@@ -1,6 +1,7 @@
 import '../css/app.css';
 import './bootstrap';
 
+import { AppLayout } from '@/Layouts';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { i18nVue } from 'laravel-vue-i18n';
@@ -21,12 +22,15 @@ import { ZiggyVue } from 'ziggy-js';
 //     }
 // }
 
-const appName = import.meta.env.VITE_APP_NAME || 'Audivi';
+const appName = import.meta.env.VITE_APP_NAME ?? 'Audivi';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: async (name) => {
-        return await resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue'));
+        return await resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')).then((page) => {
+            page.default.layout = page.default.layout ?? AppLayout;
+            return page;
+        });
     },
     // ),
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -38,7 +42,7 @@ createInertiaApp({
                 // .use(ZiggyVue, Ziggy)
                 .use(ZiggyVue)
                 .use(i18nVue, {
-                    fallbackLang: import.meta.env.VITE_APP_FALLBACK_LOCALE || 'en',
+                    fallbackLang: import.meta.env.VITE_APP_FALLBACK_LOCALE ?? 'en',
                     fallbackMissingTranslations: true,
                     resolve: async (lang: string) => {
                         const langs = import.meta.glob('../../lang/*.json');

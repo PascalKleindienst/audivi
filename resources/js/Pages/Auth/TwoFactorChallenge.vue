@@ -3,9 +3,15 @@ import InputError from '@/Components/InputError.vue';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
-import AuthLayout from '@/Layouts/AuthLayout.vue';
+import { AuthLayout, type AuthLayoutProps, useLayout } from '@/Layouts';
 import { Head, useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
+
+defineOptions(
+    useLayout<AuthLayoutProps>(AuthLayout, {
+        title: 'Two Factor Authentication'
+    })
+);
 
 const form = useForm({
     code: '',
@@ -37,62 +43,56 @@ const submit = () => {
 
 <template>
     <Head :title="$t('Two Factor Authentication')" />
-    <AuthLayout :title="$t('Two Factor Authentication')">
-        <form @submit.prevent="submit">
-            <div class="grid gap-4">
-                <div class="mb-4 text-sm">
-                    <template v-if="!recovery">
-                        {{
-                            $t(
-                                'Please confirm access to your account by entering the authentication code provided by your authenticator application.'
-                            )
-                        }}
-                    </template>
+    <form @submit.prevent="submit">
+        <div class="grid gap-4">
+            <div class="mb-4 text-sm">
+                <template v-if="!recovery">
+                    {{ $t('Please confirm access to your account by entering the authentication code provided by your authenticator application.') }}
+                </template>
 
-                    <template v-else>
-                        {{ $t('Please confirm access to your account by entering one of your emergency recovery codes.') }}
-                    </template>
-                </div>
+                <template v-else>
+                    {{ $t('Please confirm access to your account by entering one of your emergency recovery codes.') }}
+                </template>
             </div>
-            <div v-if="!recovery">
-                <Label for="code">{{ $t('Code') }}</Label>
-                <Input
-                    id="code"
-                    ref="codeInput"
-                    v-model="form.code"
-                    type="text"
-                    inputmode="numeric"
-                    class="mt-1 block w-full"
-                    autofocus
-                    autocomplete="one-time-code"
-                />
-                <InputError class="mt-2" :message="form.errors.code" />
-            </div>
+        </div>
+        <div v-if="!recovery">
+            <Label for="code">{{ $t('Code') }}</Label>
+            <Input
+                id="code"
+                ref="codeInput"
+                v-model="form.code"
+                type="text"
+                inputmode="numeric"
+                class="mt-1 block w-full"
+                autofocus
+                autocomplete="one-time-code"
+            />
+            <InputError class="mt-2" :message="form.errors.code" />
+        </div>
 
-            <div v-else>
-                <Label for="recovery_code">{{ $t('Recovery Code') }}</Label>
-                <Input
-                    id="recovery_code"
-                    ref="recoveryCodeInput"
-                    v-model="form.recovery_code"
-                    type="text"
-                    class="mt-1 block w-full"
-                    autocomplete="one-time-code"
-                />
-                <InputError class="mt-2" :message="form.errors.recovery_code" />
-            </div>
+        <div v-else>
+            <Label for="recovery_code">{{ $t('Recovery Code') }}</Label>
+            <Input
+                id="recovery_code"
+                ref="recoveryCodeInput"
+                v-model="form.recovery_code"
+                type="text"
+                class="mt-1 block w-full"
+                autocomplete="one-time-code"
+            />
+            <InputError class="mt-2" :message="form.errors.recovery_code" />
+        </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Button type="button" variant="link" @click.prevent="toggleRecovery">
-                    <template v-if="!recovery">{{ $t('Use a recovery code') }}</template>
+        <div class="mt-4 flex items-center justify-end">
+            <Button type="button" variant="link" @click.prevent="toggleRecovery">
+                <template v-if="!recovery">{{ $t('Use a recovery code') }}</template>
 
-                    <template v-else>{{ $t('Use an authentication code') }}</template>
-                </Button>
+                <template v-else>{{ $t('Use an authentication code') }}</template>
+            </Button>
 
-                <Button class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    {{ $t('Log in') }}
-                </Button>
-            </div>
-        </form>
-    </AuthLayout>
+            <Button class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                {{ $t('Log in') }}
+            </Button>
+        </div>
+    </form>
 </template>

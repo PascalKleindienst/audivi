@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import ApplicationMark from '@/Components/ApplicationMark.vue';
+import { AuthLayoutProps } from '@/Layouts/index';
 
-defineProps<{
-    title?: string;
-    description?: string;
-}>();
+defineProps<AuthLayoutProps>();
 </script>
 
 <template>
@@ -13,17 +11,17 @@ defineProps<{
             <div class="mx-auto grid w-[65ch] gap-6 px-4">
                 <div class="grid gap-2 text-center">
                     <ApplicationMark class="mx-auto size-16" />
-                    <h1 class="text-3xl font-bold">{{ title }}</h1>
-                    <p class="text-balance text-muted-foreground">
-                        {{ description }}
+                    <h1 v-if="title" class="text-3xl font-bold">{{ $t(title) }}</h1>
+                    <p v-if="description" class="text-muted-foreground text-balance">
+                        {{ $t(description) }}
                     </p>
                 </div>
 
                 <slot />
             </div>
         </div>
-        <div class="hidden bg-muted lg:block">
-            <div class="pattern h-full w-full bg-primary dark:brightness-[0.6]"></div>
+        <div class="bg-muted hidden lg:block">
+            <div class="pattern bg-primary h-full w-full dark:brightness-[0.6]"></div>
         </div>
     </div>
 </template>
