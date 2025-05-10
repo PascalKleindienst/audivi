@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
-import { useForm } from '@inertiajs/vue3';
-import { route } from 'ziggy-js';
-import { trans } from 'laravel-vue-i18n';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
+import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
-import { Button } from '@/Components/ui/button';
 import { toast } from '@/Components/ui/toast';
+import { useForm } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
+import { ref, watchEffect } from 'vue';
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 const currentPasswordInput = ref<HTMLInputElement | null>(null);
@@ -50,13 +49,13 @@ watchEffect(() => {
 
 <template>
     <FormSection @submitted="updatePassword">
-        <template #title>{{ trans('profile.password.title') }}</template>
+        <template #title>{{ $t('profile.password.title') }}</template>
 
-        <template #description>{{ trans('profile.password.description') }}</template>
+        <template #description>{{ $t('profile.password.description') }}</template>
 
         <template #form>
             <div class="col-span-6 sm:col-span-4">
-                <Label for="current_password">{{ trans('profile.password.current') }}</Label>
+                <Label for="current_password">{{ $t('profile.password.current') }}</Label>
                 <Input
                     id="current_password"
                     ref="currentPasswordInput"
@@ -69,7 +68,7 @@ watchEffect(() => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <Label for="password">{{ trans('profile.password.new') }}</Label>
+                <Label for="password">{{ $t('profile.password.new') }}</Label>
                 <Input
                     id="password"
                     ref="passwordInput"
@@ -82,7 +81,7 @@ watchEffect(() => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <Label for="password_confirmation">{{ trans('profile.password.confirm') }}</Label>
+                <Label for="password_confirmation">{{ $t('profile.password.confirm') }}</Label>
                 <Input
                     id="password_confirmation"
                     v-model="form.password_confirmation"
@@ -96,7 +95,7 @@ watchEffect(() => {
 
         <template #actions>
             <Button type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                {{ trans('general.save') }}
+                {{ $t('general.save') }}
             </Button>
         </template>
     </FormSection>

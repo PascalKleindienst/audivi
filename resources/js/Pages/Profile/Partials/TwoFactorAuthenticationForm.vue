@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import type { SharedProps } from '@/types/inertia';
-import { computed, watch } from 'vue';
-import { trans } from 'laravel-vue-i18n';
-import { useForm, usePage } from '@inertiajs/vue3';
-import { useTwoFactorAuthentication } from '@/Composables/twoFactorAuthentication';
 import ActionSection from '@/Components/ActionSection.vue';
 import ConfirmsPassword from '@/Components/ConfirmsPassword.vue';
 import InputError from '@/Components/InputError.vue';
-import { Input } from '@/Components/ui/input';
 import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
+import { useTwoFactorAuthentication } from '@/Composables/twoFactorAuthentication';
+import type { SharedProps } from '@/types/inertia';
+import { useForm, usePage } from '@inertiajs/vue3';
+import { computed, watch } from 'vue';
 
 const props = defineProps<{ requiresConfirmation: boolean }>();
 const page = usePage<SharedProps>();
@@ -44,23 +43,23 @@ watch(twoFactorEnabled, () => {
 
 <template>
     <ActionSection>
-        <template #title>{{ trans('profile.2fa.title') }}</template>
+        <template #title>{{ $t('profile.2fa.title') }}</template>
 
-        <template #description>{{ trans('profile.2fa.subtitle') }}</template>
+        <template #description>{{ $t('profile.2fa.subtitle') }}</template>
 
         <template #content>
             <h3 v-if="twoFactorEnabled && !confirming" class="text-lg font-medium">
-                {{ trans('profile.2fa.enabled') }}
+                {{ $t('profile.2fa.enabled') }}
             </h3>
             <h3 v-else-if="twoFactorEnabled && confirming" class="text-lg font-medium">
-                {{ trans('profile.2fa.confirming') }}
+                {{ $t('profile.2fa.confirming') }}
             </h3>
             <h3 v-else class="text-lg font-medium">
-                {{ trans('profile.2fa.disabled') }}
+                {{ $t('profile.2fa.disabled') }}
             </h3>
 
-            <div class="mt-3 max-w-xl text-sm text-muted-foreground">
-                <p>{{ trans('profile.2fa.information') }}</p>
+            <div class="text-muted-foreground mt-3 max-w-xl text-sm">
+                <p>{{ $t('profile.2fa.information') }}</p>
             </div>
 
             <!-- Active 2FA -->
@@ -68,10 +67,10 @@ watch(twoFactorEnabled, () => {
                 <div v-if="qrCode">
                     <div class="mt-4 max-w-xl text-sm">
                         <p v-if="confirming" class="font-semibold">
-                            {{ trans('profile.2fa.setup') }}
+                            {{ $t('profile.2fa.setup') }}
                         </p>
                         <p v-else>
-                            {{ trans('profile.2fa.finished') }}
+                            {{ $t('profile.2fa.finished') }}
                         </p>
                     </div>
 
@@ -80,12 +79,12 @@ watch(twoFactorEnabled, () => {
 
                     <div v-if="setupKey" class="mt-4 max-w-xl text-sm">
                         <p class="font-semibold">
-                            {{ trans('profile.2fa.setup_key', { key: setupKey }) }}
+                            {{ $t('profile.2fa.setup_key', { key: setupKey }) }}
                         </p>
                     </div>
 
                     <div v-if="confirming" class="mt-4">
-                        <Label for="code">{{ trans('profile.2fa.code') }}</Label>
+                        <Label for="code">{{ $t('profile.2fa.code') }}</Label>
 
                         <Input
                             id="code"
@@ -106,11 +105,11 @@ watch(twoFactorEnabled, () => {
                 <div v-if="recoveryCodes.length > 0 && !confirming">
                     <div class="mt-4 max-w-xl text-sm">
                         <p class="font-semibold">
-                            {{ trans('profile.2fa.recovery_codes') }}
+                            {{ $t('profile.2fa.recovery_codes') }}
                         </p>
                     </div>
 
-                    <div class="mt-4 grid max-w-xl gap-1 rounded-lg bg-accent px-4 py-4 font-mono text-sm">
+                    <div class="bg-accent mt-4 grid max-w-xl gap-1 rounded-lg px-4 py-4 font-mono text-sm">
                         <div v-for="code in recoveryCodes" :key="code">
                             {{ code }}
                         </div>
@@ -123,7 +122,7 @@ watch(twoFactorEnabled, () => {
                     <ConfirmsPassword @confirmed="() => enableAuthentication(props.requiresConfirmation)">
                         <template #trigger>
                             <Button type="button" :class="{ 'opacity-25': enabling }" :disabled="enabling">
-                                {{ trans('profile.2fa.enable') }}
+                                {{ $t('profile.2fa.enable') }}
                             </Button>
                         </template>
                     </ConfirmsPassword>
@@ -132,64 +131,40 @@ watch(twoFactorEnabled, () => {
                 <div v-else>
                     <ConfirmsPassword @confirmed="() => confirmAuthentication(confirmationForm)">
                         <template #trigger>
-                            <Button
-                                v-if="confirming"
-                                type="button"
-                                class="mb-3 mr-3"
-                                :class="{ 'opacity-25': enabling }"
-                                :disabled="enabling"
-                            >
-                                {{ trans('general.confirm') }}
+                            <Button v-if="confirming" type="button" class="mr-3 mb-3" :class="{ 'opacity-25': enabling }" :disabled="enabling">
+                                {{ $t('general.confirm') }}
                             </Button>
                         </template>
                     </ConfirmsPassword>
 
                     <ConfirmsPassword @confirmed="regenerateRecoveryCodes">
                         <template #trigger>
-                            <Button
-                                v-if="recoveryCodes.length > 0 && !confirming"
-                                variant="secondary"
-                                class="mb-3 mr-3"
-                            >
-                                {{ trans('profile.2fa.regenerate_recovery_codes') }}
+                            <Button v-if="recoveryCodes.length > 0 && !confirming" variant="secondary" class="mr-3 mb-3">
+                                {{ $t('profile.2fa.regenerate_recovery_codes') }}
                             </Button>
                         </template>
                     </ConfirmsPassword>
 
                     <ConfirmsPassword @confirmed="showRecoveryCodes">
                         <template #trigger>
-                            <Button
-                                v-if="recoveryCodes.length === 0 && !confirming"
-                                variant="secondary"
-                                class="mb-3 mr-3"
-                            >
-                                {{ trans('profile.2fa.show_recovery_codes') }}
+                            <Button v-if="recoveryCodes.length === 0 && !confirming" variant="secondary" class="mr-3 mb-3">
+                                {{ $t('profile.2fa.show_recovery_codes') }}
                             </Button>
                         </template>
                     </ConfirmsPassword>
 
                     <ConfirmsPassword @confirmed="disableAuthentication">
                         <template #trigger>
-                            <Button
-                                v-if="confirming"
-                                variant="secondary"
-                                :class="{ 'opacity-25': disabling }"
-                                :disabled="disabling"
-                            >
-                                {{ trans('general.cancel') }}
+                            <Button v-if="confirming" variant="secondary" :class="{ 'opacity-25': disabling }" :disabled="disabling">
+                                {{ $t('general.cancel') }}
                             </Button>
                         </template>
                     </ConfirmsPassword>
 
                     <ConfirmsPassword @confirmed="disableAuthentication">
                         <template #trigger>
-                            <Button
-                                v-if="!confirming"
-                                variant="destructive"
-                                :class="{ 'opacity-25': disabling }"
-                                :disabled="disabling"
-                            >
-                                {{ trans('profile.2fa.disable') }}
+                            <Button v-if="!confirming" variant="destructive" :class="{ 'opacity-25': disabling }" :disabled="disabling">
+                                {{ $t('profile.2fa.disable') }}
                             </Button>
                         </template>
                     </ConfirmsPassword>

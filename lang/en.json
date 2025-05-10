@@ -332,5 +332,8 @@
     "user.updated": "Updated user",
     "user.deleted": "Deleted user",
     "user.delete.confirmation.title": "Delete User?",
-    "user.delete.confirmation.description": "Are you sure you want to delete this user?"
+    "user.delete.confirmation.description": "Are you sure you want to delete this user?",
+    "profile.profile": "Profil",
+    "profile.password": "Passwort",
+    "profile.security": "Sicherheit"
 }

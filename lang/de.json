@@ -330,5 +330,8 @@
     "user.updated": "Benutzer aktualisiert",
     "user.deleted": "Benutzer gelöscht",
     "user.delete.confirmation.title": "Benutzer wirklich löschen?",
-    "user.delete.confirmation.description": "Möchten Sie diesen Benutzer wirklich löschen?"
+    "user.delete.confirmation.description": "Möchten Sie diesen Benutzer wirklich löschen?",
+    "profile.profile": "Profil",
+    "profile.password": "Passwort",
+    "profile.security": "Sicherheit"
 }

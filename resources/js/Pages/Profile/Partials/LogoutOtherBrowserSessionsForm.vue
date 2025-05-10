@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { route } from 'ziggy-js';
-import { Icon } from '@iconify/vue';
-import { trans } from 'laravel-vue-i18n';
 import ActionSection from '@/Components/ActionSection.vue';
 import PasswordConfirmedDeleteAction from '@/Components/PasswordConfirmedDeleteAction.vue';
+import { Icon } from '@iconify/vue';
 
 defineProps<{
     sessions: Array<{
@@ -21,10 +19,10 @@ defineProps<{
 
 <template>
     <ActionSection>
-        <template #title>{{ trans('profile.sessions.title') }}</template>
+        <template #title>{{ $t('profile.sessions.title') }}</template>
 
         <template #description>
-            {{ trans('profile.sessions.subtitle') }}
+            {{ $t('profile.sessions.subtitle') }}
         </template>
 
         <template #content>
@@ -33,15 +31,13 @@ defineProps<{
                 <div v-for="(session, i) in sessions" :key="i" class="flex items-center">
                     <Icon
                         class="h-8 w-8 text-gray-500"
-                        :icon="
-                            session.agent.is_desktop ? 'heroicons:computer-desktop' : 'heroicons:device-phone-mobile'
-                        "
+                        :icon="session.agent.is_desktop ? 'heroicons:computer-desktop' : 'heroicons:device-phone-mobile'"
                     />
 
                     <div class="ms-3">
                         <div class="text-sm text-gray-600 dark:text-gray-400">
-                            {{ session.agent.platform ? session.agent.platform : trans('general.unknown') }} -
-                            {{ session.agent.browser ? session.agent.browser : trans('general.unknown') }}
+                            {{ session.agent.platform ? session.agent.platform : $t('general.unknown') }} -
+                            {{ session.agent.browser ? session.agent.browser : $t('general.unknown') }}
                         </div>
 
                         <div>
@@ -49,10 +45,10 @@ defineProps<{
                                 {{ session.ip_address }},
 
                                 <span v-if="session.is_current_device" class="font-semibold text-green-500">
-                                    {{ trans('profile.sessions.current_device') }}
+                                    {{ $t('profile.sessions.current_device') }}
                                 </span>
                                 <span v-else>
-                                    {{ trans('profile.session.last_active', { active: session.last_active }) }}
+                                    {{ $t('profile.session.last_active', { active: session.last_active }) }}
                                 </span>
                             </div>
                         </div>
@@ -61,11 +57,8 @@ defineProps<{
             </div>
 
             <div class="mt-4">
-                <PasswordConfirmedDeleteAction
-                    :title="trans('profile.sessions.logout')"
-                    :route="route('other-browser-sessions.destroy')"
-                >
-                    {{ trans('profile.sessions.confirm_password') }}
+                <PasswordConfirmedDeleteAction :title="$t('profile.sessions.logout')" :route="route('other-browser-sessions.destroy')">
+                    {{ $t('profile.sessions.confirm_password') }}
                 </PasswordConfirmedDeleteAction>
             </div>
         </template>
