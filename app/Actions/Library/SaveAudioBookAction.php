@@ -13,11 +13,11 @@ use App\Models\Series;
 use App\Models\Track;
 use Illuminate\Support\Collection;
 
-final class SaveAudioBook
+final readonly class SaveAudioBookAction
 {
     private const MAX_LEVENSHTEIN_DISTANCE = 4;
 
-    public function save(AudioBookData $data): AudioBookData
+    public function handle(AudioBookData $data): AudioBookData
     {
         // Upsert Audiobook -> action
         $book = AudioBook::query()

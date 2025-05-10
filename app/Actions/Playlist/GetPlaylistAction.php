@@ -9,7 +9,7 @@ use App\Models\AudioBook;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-final class GetPlaylistAction
+final readonly class GetPlaylistAction
 {
     /**
      * @throws ModelNotFoundException<AudioBook> if no track was found

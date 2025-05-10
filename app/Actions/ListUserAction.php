@@ -8,7 +8,7 @@ use App\Data\UserData;
 use App\Models\User;
 use Spatie\LaravelData\PaginatedDataCollection;
 
-final class ListUserAction
+final readonly class ListUserAction
 {
     /**
      * @param  array{search?: string, sort?: string, direction?: string}  $filter

@@ -8,7 +8,7 @@ use App\Models\Track;
 use Closure;
 use Illuminate\Support\Facades\Storage;
 
-final class StreamTrackAction
+final readonly class StreamTrackAction
 {
     /**
      * @return array{status: 200|206, headers: array<string, mixed>, callback: Closure(): void}

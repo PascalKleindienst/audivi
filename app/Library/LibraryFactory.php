@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Library;
 
-use App\Actions\Library\SaveAudioBook;
+use App\Actions\Library\SaveAudioBookAction;
 use App\Data\AudioBookData;
 use App\Data\Library\ItemData;
 use App\Data\Library\MetaData;
@@ -19,7 +19,7 @@ use function count;
 final class LibraryFactory
 {
     public function __construct(
-        private readonly SaveAudioBook $saveAudioBook
+        private readonly SaveAudioBookAction $saveAudioBook
     ) {}
 
     /**
@@ -94,6 +94,6 @@ final class LibraryFactory
             File::copy($metadata->cover, Storage::disk('public')->path($data['cover']));
         }
 
-        return $this->saveAudioBook->save(AudioBookData::from($data));
+        return $this->saveAudioBook->handle(AudioBookData::from($data));
     }
 }
