@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Card, CardContent, CardFooter, CardHeader } from '@/Components/ui/card';
 import { computed, useSlots } from 'vue';
 import SectionTitle from './SectionTitle.vue';
 
@@ -8,26 +9,28 @@ const hasActions = computed(() => !!useSlots().actions);
 </script>
 
 <template>
-    <div class="md:grid md:grid-cols-3 md:gap-6">
-        <SectionTitle>
-            <template #title>
-                <slot name="title" />
-            </template>
-            <template #description>
-                <slot name="description" />
-            </template>
-        </SectionTitle>
+    <Card>
+        <CardHeader>
+            <SectionTitle>
+                <template #title>
+                    <slot name="title" />
+                </template>
+                <template #description>
+                    <slot name="description" />
+                </template>
+            </SectionTitle>
+        </CardHeader>
 
         <div class="mt-5 md:col-span-2 md:mt-0">
-            <form class="max-w-2xl px-4 py-5 sm:p-6" @submit.prevent="$emit('submitted')">
-                <div class="grid grid-cols-6 gap-6">
+            <form class="max-w-4xl" @submit.prevent="$emit('submitted')">
+                <CardContent class="space-y-4">
                     <slot name="form" />
-                </div>
+                </CardContent>
 
-                <div v-if="hasActions" class="flex items-center justify-end px-4 py-3 text-end sm:px-6">
+                <CardFooter v-if="hasActions" class="flex items-center justify-end text-end">
                     <slot name="actions" />
-                </div>
+                </CardFooter>
             </form>
         </div>
-    </div>
+    </Card>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Button } from '@/Components/ui/button';
 import {
     Pagination,
     PaginationEllipsis,
@@ -9,8 +10,8 @@ import {
     PaginationNext,
     PaginationPrev
 } from '@/Components/ui/pagination';
-import { Button } from '@/Components/ui/button';
 import { PaginatedDataCollection } from '@/types/inertia';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{ paginator: PaginatedDataCollection<unknown>; only?: string[] }>();
 
@@ -35,12 +36,12 @@ if (props.only) {
             (currentPage) => {
                 let url = paginator.links[currentPage]?.url;
                 if (url) {
-                    $inertia.visit(url, options);
+                    router.visit(url, options);
                 }
             }
         "
     >
-        <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+        <PaginationList v-slot="{ items }" class="flex items-center justify-center gap-1">
             <PaginationFirst />
             <PaginationPrev />
 

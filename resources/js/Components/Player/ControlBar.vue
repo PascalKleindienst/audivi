@@ -8,6 +8,7 @@ import { usePlaylist } from '@/Composables/playlist';
 import { CircleGaugeIcon, ListIcon, SkipBackIcon, SkipForwardIcon, Volume1Icon, Volume2, VolumeIcon, VolumeOffIcon } from 'lucide-vue-next';
 import { Icon } from '@iconify/vue';
 import { computed, shallowRef, useTemplateRef, watch } from 'vue';
+import AudiobookCover from '@/Components/Audiobooks/AudiobookCover.vue';
 
 const { state: sidebar } = useSidebar();
 const sidebarOpen = computed(() => sidebar.value !== 'collapsed');
@@ -84,7 +85,7 @@ watch(
         </div>
 
         <div v-if="state.track" class="flex w-full items-center gap-4">
-            <img v-if="state.cover" :src="state.cover" class="size-16 rounded-lg" alt="" />
+            <AudiobookCover :cover="state.cover" :title="state.title" :pattern="state.bookId ?? 0" class="size-16 bg-cover" />
             <div class="flex-1 space-y-2">
                 <div class="flex items-center justify-between gap-4">
                     <div class="line-clamp-2 text-sm font-semibold">{{ state.track.title }}</div>
