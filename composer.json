@@ -70,11 +70,15 @@
         "lint": "pint",
         "test:type-coverage": "pest --type-coverage --min=100",
         "test:lint": "pint --test",
-        "test:unit": "pest --parallel unit",
+        "test:unit": "pest --parallel --group=unit",
+        "test:feature": "pest --parallel --group=feature",
+        "test:architecture": "pest --parallel --group=architecture",
         "test:types": "phpstan analyze -c phpstan.neon --memory-limit=256M",
         "test": [
             "@test:type-coverage",
             "@test:unit",
+            "@test:feature",
+            "@test:architecture",
             "@test:lint",
             "@test:types"
         ],
