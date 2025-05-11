@@ -7,6 +7,7 @@ namespace App\Data\ID3;
 use App\Enums\ID3\FrameType;
 use App\Enums\ID3\Genre;
 use Spatie\LaravelData\Data;
+use Stringable;
 
 final class FrameData extends Data
 {
@@ -21,10 +22,14 @@ final class FrameData extends Data
      */
     public static function fromArray(array $data): self
     {
+        if (isset($data['value']) && $data['value'] instanceof Stringable) {
+            $data['value'] = (string) $data['value'];
+        }
+
         return new self(
             id: (string) $data['id'],
             type: $data['type'],
-            value: $data['value'] ?? null
+            value: $data['value'] ?? null,
         );
     }
 }

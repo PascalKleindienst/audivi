@@ -7,9 +7,22 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\actingAs;
 
+it('only admins can view the user module', function () {
+    $user = User::factory(state: ['is_admin' => false])->create();
+
+    actingAs($user)->get(route('admin.users.index'))
+        ->assertForbidden();
+    actingAs($user)->get(route('admin.users.edit', $user))
+        ->assertForbidden();
+    actingAs($user)->patch(route('admin.users.update', $user))
+        ->assertForbidden();
+    actingAs($user)->delete(route('admin.users.destroy', $user))
+        ->assertForbidden();
+});
+
 it('renders the user index view with users data', function () {
     $users = User::factory()->count(3)->create();
-    $admin = User::factory()->create();
+    $admin = User::factory(state: ['is_admin' => true])->create();
 
     actingAs($admin)->get(route('admin.users.index'))
         ->assertOk()
@@ -21,7 +34,7 @@ it('renders the user index view with users data', function () {
 
 it('renders the edit view with user data', function () {
     $user = User::factory()->create();
-    $admin = User::factory()->create();
+    $admin = User::factory(state: ['is_admin' => true])->create();
 
     actingAs($admin)
         ->get(route('admin.users.edit', $user))
@@ -34,8 +47,8 @@ it('renders the edit view with user data', function () {
 
 it('updates the user and redirects', function () {
     $user = User::factory()->create();
-    $data = ['name' => 'Updated Name', 'email' => $user->email];
-    $admin = User::factory()->create();
+    $data = ['name' => 'Updated Name', 'email' => $user->email, 'is_admin' => false];
+    $admin = User::factory(state: ['is_admin' => true])->create();
 
     actingAs($admin)->patch(route('admin.users.update', $user), $data)
         ->assertRedirect(route('admin.users.index'))
@@ -47,8 +60,8 @@ it('updates the user and redirects', function () {
 
 it('deletes the user and redirects', function () {
     $user = User::factory()->create();
+    $admin = User::factory(state: ['is_admin' => true])->create();
 
-    $admin = User::factory()->create();
     actingAs($admin)->delete(route('admin.users.destroy', $user))
         ->assertRedirect(route('admin.users.index'))
         ->assertSessionHas('flash.banner', trans('user.deleted'));

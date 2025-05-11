@@ -1,30 +1,35 @@
 <?php
 
-use App\Data\ID3\Genre;
-use App\Data\ID3\ImageType;
+declare(strict_types=1);
+
 use App\Data\ID3\ImageValueData;
 use App\Data\ID3\TagData;
+use App\Enums\ID3\Genre;
+use App\Enums\ID3\ImageType;
+use App\Exceptions\ParserError;
 use App\Scanners\ID3\TagParser;
+use App\ValueObjects\Buffer;
+use App\ValueObjects\Version;
 
 it('checks if the buffer contains a valid ID3v2 tag', function () {
     $parser = new TagParser();
     $validBuffer = "ID3\x03\x00".str_repeat("\x00", 11);
     $invalidBuffer = str_repeat(' ', 14);
 
-    expect($parser->check($validBuffer))->toBeTrue()
-        ->and($parser->check($invalidBuffer))->toBeFalse();
+    expect($parser->check(Version::from(1, 0), Buffer::from($validBuffer)))->toBeTrue()
+        ->and($parser->check(Version::from(1, 0), Buffer::from($invalidBuffer)))->toBeFalse();
 })->group('scanners', 'id3');
 
 it('does not support unsynchronisation', function () {
     $parser = new TagParser();
-    $buffer = "ID3\x03\x00\xFF";
+    $buffer = Buffer::from("ID3\x03\x00\xFF");
 
-    expect($parser->parse($buffer))->toBeNull();
+    expect(static fn () => $parser->parse($buffer))->toThrow(ParserError::class, 'Unsynchronised frames are not supported');
 })->group('scanners', 'id3');
 
 it('parses a tag', function () {
     $parser = new TagParser();
-    $buffer = "ID3\x03\x00\x00\x00\x00\x0Ev"
+    $buffer = Buffer::from("ID3\x03\x00\x00\x00\x00\x0Ev"
         ."APIC\x00\x00\x00\x22\x00\x00\x00image/jpg\x00\x03sample description\x00\x00\xFF\xFF"
         ."TPE1\x00\x00\x00\x07\x00\x00\x00ARTIST"
         ."TALB\x00\x00\x00\x06\x00\x00\x00ALBUM"
@@ -35,39 +40,39 @@ it('parses a tag', function () {
         ."COMM\x00\x00\x00\x1E\x00\x00\x00XXX"
         ."ID3v1 Comment\x00SOME COMMENT"
         ."TIT2\x00\x00\x00\x06\x00\x00\x00TITLE"
-        ."TIT3\x00\x00\x00\x09\x00\x00\x00SUBTITLE";
+        ."TIT3\x00\x00\x00\x09\x00\x00\x00SUBTITLE");
     $tag = $parser->parse($buffer);
 
     expect($tag)->toBeInstanceOf(TagData::class)
-        ->and($tag?->kind)->toBe('v2')
-        ->and($tag?->title)->toBe('TITLE')
-        ->and($tag?->album)->toBe('ALBUM')
-        ->and($tag?->artist)->toBe('ARTIST')
-        ->and($tag?->year)->toBe(1970)
-        ->and($tag?->version)->toBe([3, 0])
-        ->and($tag?->comments)->toBe('SOME COMMENT')
-        ->and($tag?->track)->toBe('2')
-        ->and($tag?->genre)->toBe(Genre::CLASSIC_ROCK)
-        ->and($tag?->images)->toHaveCount(1)
-        ->and($tag?->images[0])->toBeInstanceOf(ImageValueData::class)
-        ->and($tag?->images[0]->type)->toBe(ImageType::COVER_FRONT)
-        ->and($tag?->images[0]->mime)->toBe('image/jpg')
-        ->and($tag?->images[0]->data)->toBe("\xFF\Xff");
+        ->and($tag->kind)->toBe('v2')
+        ->and($tag->title)->toBe('TITLE')
+        ->and($tag->album)->toBe('ALBUM')
+        ->and($tag->artist)->toBe('ARTIST')
+        ->and($tag->year)->toBe(1970)
+        ->and($tag->version)->toEqual(Version::from(3, 0))
+        ->and($tag->comments)->toBe('SOME COMMENT')
+        ->and($tag->track)->toBe('2')
+        ->and($tag->genre)->toBe(Genre::CLASSIC_ROCK)
+        ->and($tag->images)->toHaveCount(1)
+        ->and($tag->images[0])->toBeInstanceOf(ImageValueData::class)
+        ->and($tag->images[0]->type)->toBe(ImageType::COVER_FRONT)
+        ->and($tag->images[0]->mime)->toBe('image/jpg')
+        ->and($tag->images[0]->data)->toBe("\xFF\Xff");
 })->group('scanners', 'id3');
 
 it('it skips invalid frames and non frame blocks', function () {
     $parser = new TagParser();
-    $buffer = "ID3\x03\x00\x00\x00\x00\x0Ev"
-        ."\xFFTPE1\x00\x00\x00\x07\x00\x00\x00ARTIST";
+    $buffer = Buffer::from("ID3\x03\x00\x00\x00\x00\x0Ev"
+        ."\xFFTPE1\x00\x00\x00\x07\x00\x00\x00ARTIST");
     $tag = $parser->parse($buffer);
 
     expect($tag)->toBeInstanceOf(TagData::class)
-        ->and($tag?->artist)->toBeNull();
+        ->and($tag->artist)->toBeNull();
 })->group('scanners', 'id3');
 
 it('parses a tag with an extended header', function () {
     $parser = new TagParser();
-    $buffer = "ID3\x03\x00\x40\x00\x00\x0Ev\x00\x00\x00\x06\x00\x00"
+    $buffer = Buffer::from("ID3\x03\x00\x40\x00\x00\x0Ev\x00\x00\x00\x06\x00\x00"
         ."APIC\x00\x00\x00\x22\x00\x00\x00image/jpg\x00\x03sample description\x00\x00\xFF\xFF"
         ."TPE1\x00\x00\x00\x07\x00\x00\x00ARTIST"
         ."TALB\x00\x00\x00\x06\x00\x00\x00ALBUM"
@@ -78,22 +83,22 @@ it('parses a tag with an extended header', function () {
         ."COMM\x00\x00\x00\x1E\x00\x00\x00XXX"
         ."ID3v1 Comment\x00SOME COMMENT"
         ."TIT2\x00\x00\x00\x06\x00\x00\x00TITLE"
-        ."TIT3\x00\x00\x00\x09\x00\x00\x00SUBTITLE";
+        ."TIT3\x00\x00\x00\x09\x00\x00\x00SUBTITLE");
     $tag = $parser->parse($buffer);
 
     expect($tag)->toBeInstanceOf(TagData::class)
-        ->and($tag?->kind)->toBe('v2')
-        ->and($tag?->title)->toBe('TITLE')
-        ->and($tag?->album)->toBe('ALBUM')
-        ->and($tag?->artist)->toBe('ARTIST')
-        ->and($tag?->year)->toBe(1970)
-        ->and($tag?->version)->toBe([3, 0])
-        ->and($tag?->comments)->toBe('SOME COMMENT')
-        ->and($tag?->track)->toBe('2')
-        ->and($tag?->genre)->toBe(Genre::CLASSIC_ROCK)
-        ->and($tag?->images)->toHaveCount(1)
-        ->and($tag?->images[0])->toBeInstanceOf(ImageValueData::class)
-        ->and($tag?->images[0]->type)->toBe(ImageType::COVER_FRONT)
-        ->and($tag?->images[0]->mime)->toBe('image/jpg')
-        ->and($tag?->images[0]->data)->toBe("\xFF\Xff");
+        ->and($tag->kind)->toBe('v2')
+        ->and($tag->title)->toBe('TITLE')
+        ->and($tag->album)->toBe('ALBUM')
+        ->and($tag->artist)->toBe('ARTIST')
+        ->and($tag->year)->toBe(1970)
+        ->and($tag->version)->toEqual(Version::from(3, 0))
+        ->and($tag->comments)->toBe('SOME COMMENT')
+        ->and($tag->track)->toBe('2')
+        ->and($tag->genre)->toBe(Genre::CLASSIC_ROCK)
+        ->and($tag->images)->toHaveCount(1)
+        ->and($tag->images[0])->toBeInstanceOf(ImageValueData::class)
+        ->and($tag->images[0]->type)->toBe(ImageType::COVER_FRONT)
+        ->and($tag->images[0]->mime)->toBe('image/jpg')
+        ->and($tag->images[0]->data)->toBe("\xFF\Xff");
 })->group('scanners', 'id3');

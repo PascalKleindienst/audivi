@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\AudioBook;
 use App\Models\Author;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Inertia\Testing\AssertableInertia as Assert;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\put;
@@ -34,8 +37,8 @@ it('can list authors', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Author/Index')
-            ->has('authors', fn(Assert $page) => $page
-                ->has('meta', fn(Assert $page) => $page
+            ->has('authors', fn (Assert $page) => $page
+                ->has('meta', fn (Assert $page) => $page
                     ->where('current_page', 1)
                     ->where('last_page', 1)
                     ->where('from', 1)
@@ -49,7 +52,7 @@ it('can list authors', function () {
                     ->has('path')
                 )
                 ->has('links', 3)
-                ->has('data', 3, fn(Assert $page) => $page
+                ->has('data', 3, fn (Assert $page) => $page
                     ->has('id')
                     ->has('name')
                     ->has('image')
@@ -61,17 +64,17 @@ it('can list authors', function () {
 it('can show a specific author', function () {
     $author = Author::first();
 
-    get(route('authors.show', $author->id))
+    get(route('authors.show', $author?->id))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Author/Show')
-            ->has('author', fn(Assert $page) => $page
-                ->whereAll($author->toArray())
+            ->has('author', fn (Assert $page) => $page
+                ->whereAll($author?->toArray())
             )
-            ->has('books', 2, fn(Assert $page) => $page
-                ->where('id',  $author->audioBooks->first()->id)
-                ->where('title',  $author->audioBooks->first()->title)
-                ->where('path',  $author->audioBooks->first()->path)
+            ->has('books', 2, fn (Assert $page) => $page
+                ->where('id', $author?->audioBooks->first()->id)
+                ->where('title', $author?->audioBooks->first()->title)
+                ->where('path', $author?->audioBooks->first()->path)
                 ->etc()
             )
         );
@@ -80,12 +83,12 @@ it('can show a specific author', function () {
 it('can edit a specific author', function () {
     $author = Author::first();
 
-    get(route('authors.edit', $author->id))
+    get(route('authors.edit', $author?->id))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Author/Edit')
-            ->has('author', fn(Assert $page) => $page
-                ->whereAll($author->toArray())
+            ->has('author', fn (Assert $page) => $page
+                ->whereAll($author?->toArray())
             )
         );
 })->group('controllers', 'authors');
@@ -94,18 +97,18 @@ it('can update an author', function () {
     Storage::fake();
     $author = Author::first();
 
-    put(route('authors.update', $author->id), [
+    put(route('authors.update', $author?->id), [
         'name' => 'Updated Name',
         'link' => 'Updated Link',
         'description' => 'Updated Description',
-        'image' => null
+        'image' => null,
     ]);
 
-    $author->refresh();
-    expect($author->name)->toBe('Updated Name')
-        ->and($author->link)->toBe('Updated Link')
-        ->and($author->description)->toBe('Updated Description')
-        ->and($author->image)->toBeNull();
+    $author?->refresh();
+    expect($author?->name)->toBe('Updated Name')
+        ->and($author?->link)->toBe('Updated Link')
+        ->and($author?->description)->toBe('Updated Description')
+        ->and($author?->image)->toBeNull();
 })->group('controllers', 'authors');
 
 it('can update an author image', function () {
@@ -113,18 +116,17 @@ it('can update an author image', function () {
     $author = Author::first();
     $file = UploadedFile::fake()->image('author.jpg');
 
-    expect($author->image)->toBeNull();
+    expect($author?->image)->toBeNull();
 
-    put(route('authors.update', $author->id), [
+    put(route('authors.update', $author?->id), [
         'name' => 'Updated Name',
-        'image' => $file
+        'image' => $file,
     ])
-        ->assertRedirect(route('authors.show', $author->id))
+        ->assertRedirect(route('authors.show', $author?->id))
         ->assertSessionHas('flash.bannerStyle', 'success')
-        ->assertSessionHas('flash.banner')
-    ;
+        ->assertSessionHas('flash.banner');
 
-    $author->refresh();
-    expect($author->image)->not()->toBeNull();
-    Storage::assertExists('public/authors/' . $author->image);
+    $author?->refresh();
+    expect($author?->image)->not()->toBeNull();
+    Storage::assertExists('public/authors/'.$author?->image);
 })->group('controllers', 'authors');
