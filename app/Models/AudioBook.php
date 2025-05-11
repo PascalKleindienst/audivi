@@ -115,7 +115,7 @@ final class AudioBook extends Model
     }
 
     /**
-     * @return string[]
+     * @return array{published_at: string, created_at: string, updated_at: string}
      */
     protected function casts(): array
     {

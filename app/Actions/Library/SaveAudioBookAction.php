@@ -72,7 +72,7 @@ final readonly class SaveAudioBookAction
         }
 
         // save / sync authors
-        if (! empty($data->authors) && $data->authors instanceof Collection) {
+        if (! empty($data->authors)) {
             $newAuthors = $data->authors
                 ->map(static fn (AuthorData $author) => ['name' => $author->name])
                 ->where(static fn (array $author) => $book->authors

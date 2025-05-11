@@ -32,7 +32,7 @@ final class LibraryFactory
     }
 
     /**
-     * @param  Collection<string>  $files
+     * @param  Collection<int|string, string>  $files
      */
     public function createLibraryItem(string $folder, Collection $files): ItemData
     {

@@ -23,7 +23,6 @@ trait IsDataProvider
         return match ($type) {
             DataProviderType::AUTHOR => $this instanceof AuthorDataProvider,
             DataProviderType::BOOK => $this instanceof BookDataProvider,
-            default => false
         };
     }
 

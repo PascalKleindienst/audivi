@@ -7,7 +7,7 @@ namespace App\Data;
 use App\Data\Library\MetaData;
 use App\Models\AudioBook;
 use Carbon\Carbon;
-use DateTime;
+use DateTimeImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelData\Attributes\Computed;
@@ -15,6 +15,12 @@ use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 
+/**
+ * @property-read SeriesData|null $series
+ * @property-read TrackData|null $trackData
+ * @property-read PublisherData|null $publisher
+ * @property-read  Collection<int, AuthorData> $authors
+ */
 final class AudioBookData extends Data
 {
     public readonly ?int $duration;
@@ -40,9 +46,9 @@ final class AudioBookData extends Data
         public readonly Lazy|Collection $tracks,
         public readonly Lazy|SeriesData|null $series = null,
         public readonly Lazy|PublisherData|null $publisher = null,
-        public readonly DateTime|Carbon|null $published_at = null,
-        public readonly DateTime|Carbon|null $created_at = null,
-        public readonly DateTime|Carbon|null $updated_at = null,
+        public readonly DateTimeImmutable|Carbon|null $published_at = null,
+        public readonly DateTimeImmutable|Carbon|null $created_at = null,
+        public readonly DateTimeImmutable|Carbon|null $updated_at = null,
     ) {
         /** @var Collection<int, TrackData> $tmpTracks */
         $tmpTracks = $this->tracks instanceof Lazy ? $this->tracks->resolve() : $this->tracks;
@@ -62,16 +68,6 @@ final class AudioBookData extends Data
         } else {
             $this->fileSize = null;
         }
-    }
-
-    /**
-     * @return string[]
-     */
-    public function includeProperties(): array
-    {
-        return [
-            'description',
-        ];
     }
 
     public static function fromModel(AudioBook $book): self
@@ -116,7 +112,17 @@ final class AudioBookData extends Data
             tracks: TrackData::collect($metadata->tracks, Collection::class),
             series: SeriesData::from($metadata->series),
             publisher: PublisherData::from($metadata->publisher),
-            published_at: $metadata->published_at,
+            published_at: $metadata->published_at ? DateTimeImmutable::createFromMutable($metadata->published_at) : null,
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    public function includeProperties(): array
+    {
+        return [
+            'description',
+        ];
     }
 }

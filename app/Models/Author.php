@@ -59,7 +59,7 @@ final class Author extends Model
     }
 
     /**
-     * @return string[]
+     * @return array{created_at: string, updated_at: string}
      */
     protected function casts(): array
     {

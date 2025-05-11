@@ -16,7 +16,7 @@ final class ItemData extends Data
 
     public function __construct(
         public readonly string $folder,
-        /** @var Collection<string> */
+        /** @var Collection<int|string, string> */
         public readonly Collection $files,
         public readonly MetaData $meta,
     ) {
